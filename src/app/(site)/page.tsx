@@ -202,7 +202,7 @@ export default async function HomePage() {
                 Company profile, landing page, dan toko online{webPrice}, termasuk domain .com satu tahun dan maintenance.
               </p>
             </div>
-            <div className="flex flex-col-reverse items-start gap-4 lg:flex-row lg:items-center">
+            <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-center">
               {activePromos.length > 0 ? (
                 <a href="/promo" className="font-medium text-cyan-ink hover:underline">
                   Lihat promo aktif

@@ -16,9 +16,9 @@ export function CaseStudyCard({ cs, headingLevel = "h3" }: { cs: CaseStudySummar
       <p className="text-body text-ink-muted">{cs.cardBody || cs.summary}</p>
       <dl className="grid grid-cols-2 gap-x-8 gap-y-4 border-t border-line pt-6">
         {cs.metrics.map((m) => (
-          <div key={m.label} className="flex flex-col-reverse">
+          <div key={m.label} className="flex flex-col">
             <dt className="text-small text-ink-muted">{m.label}</dt>
-            <dd className="text-display text-ink">{m.value}</dd>
+            <dd className="order-first text-display text-ink">{m.value}</dd>
           </div>
         ))}
       </dl>
