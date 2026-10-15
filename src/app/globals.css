@@ -258,3 +258,23 @@
   padding: 8px 12px;
   text-align: left;
 }
+
+/* Hero lit dots ("dot terang menyala dari tengah") */
+@keyframes hero-lit {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--o);
+  }
+}
+.hero-lit-dot {
+  opacity: 0;
+  animation: hero-lit 0.5s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-lit-dot {
+    animation: none;
+    opacity: var(--o);
+  }
+}
