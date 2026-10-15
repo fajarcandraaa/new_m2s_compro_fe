@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
 
 type Toast = { id: number; kind: "success" | "error"; text: string };
@@ -14,7 +14,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setItems((xs) => [...xs, { id, kind, text }]);
     setTimeout(() => setItems((xs) => xs.filter((x) => x.id !== id)), kind === "error" ? 6000 : 3000);
   }, []);
-  const api = { success: (t = "Tersimpan") => push("success", t), error: (t: string) => push("error", t) };
+  const api = useMemo(() => ({ success: (t = "Tersimpan") => push("success", t), error: (t: string) => push("error", t) }), [push]);
   return (
     <Ctx.Provider value={api}>
       {children}
