@@ -20,7 +20,7 @@ const LIT_DOTS = (() => {
       const dist = Math.hypot(x - 320, y - 320);
       if (dist > 300) continue;
       const t = dist / 300;
-      dots.push({ x, y, o: 0.08 + 0.32 * (1 - t) ** 1.4, d: t });
+      dots.push({ x, y, o: 0.16 + 0.26 * (1 - t), d: t });
     }
   }
   return dots;
@@ -43,7 +43,7 @@ export function HeroVisual({ className }: { className?: string }) {
               key={`${p.x}-${p.y}`}
               cx={p.x}
               cy={p.y}
-              r={2.5}
+              r={3}
               fill="#30C2DB"
               className="hero-lit-dot"
               style={{ "--o": p.o, animationDelay: `${1.8 + p.d * 0.6}s` } as React.CSSProperties}
