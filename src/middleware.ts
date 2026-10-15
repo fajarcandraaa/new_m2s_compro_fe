@@ -8,6 +8,8 @@ export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   if (pathname === "/admin/login") return NextResponse.next();
   if (!req.cookies.has("m2s_session")) {
+    // Note: Next normalises loopback hosts (127.0.0.1, [::1]) to "localhost" in redirects, so test
+    // locally via http://localhost:3000; real domains behind a proxy are unaffected.
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";
