@@ -10,6 +10,7 @@ export function ClientLogo({ logo }: { logo: L }) {
         alt={logo.name}
         fill
         sizes="160px"
+        unoptimized={!logo.imageUrl.startsWith("/")}
         className="object-contain p-2 [filter:grayscale(1)_brightness(0)_invert(0.64)]"
       />
     </div>

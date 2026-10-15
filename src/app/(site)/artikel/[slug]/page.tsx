@@ -49,7 +49,7 @@ export default async function ArtikelDetailPage({ params }: Props) {
     description: article.excerpt,
     datePublished: article.publishedAt,
     author: { "@type": "Organization", name: article.author || "Mind2Screen" },
-    image: `${SITE_URL}${article.coverImageUrl ?? "/brand/og-default.png"}`,
+    image: new URL(article.coverImageUrl ?? "/brand/og-default.png", SITE_URL).toString(),
     mainEntityOfPage: url,
   };
 
