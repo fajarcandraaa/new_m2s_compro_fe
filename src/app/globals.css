@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+/*
+ * Mind2Screen design tokens (brief §4, Figma "Foundations").
+ * Light is the default; any subtree can switch to dark with data-theme="dark"
+ * (hero, closing CTA, footer, page heroes). No global dark mode.
+ */
+:root,
+[data-theme="light"] {
+  --ground: #f1f8fe;
+  --surface: #ffffff;
+  --line: #d5dee6;
+  --ink: #1a1a1a;
+  --ink-muted: #666666;
+  --logo-gray: #808080;
+  --cyan: #30c2db;
+  --cyan-glow: #43f4fa;
+  --cyan-ink: #0b7285;
+  --on-cyan: #080808;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --ground: #080808;
+  --surface: #181818;
+  --line: #333333;
+  --ink: #ffffff;
+  --ink-muted: #a3a3a3;
+  --cyan-ink: #30c2db;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-logo-gray: var(--logo-gray);
+  --color-cyan: var(--cyan);
+  --color-cyan-glow: var(--cyan-glow);
+  --color-cyan-ink: var(--cyan-ink);
+  --color-on-cyan: var(--on-cyan);
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+
+  --container-site: 1248px;
+  --container-read: 720px;
+
+  /* Kill every shadow utility: depth comes from ground vs surface + line. */
+  --shadow-*: initial;
+  --drop-shadow-*: initial;
+  --inset-shadow-*: initial;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 26px;
+    -webkit-font-smoothing: antialiased;
+  }
+  [data-theme] {
+    color: var(--ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--cyan);
+    color: var(--on-cyan);
+  }
+}
+
+/* Typography scale */
+@utility text-display {
+  font-size: 48px;
+  line-height: 52px;
+  font-weight: 600;
+}
+@utility text-display-hero {
+  font-size: 36px;
+  line-height: 42px;
+  font-weight: 600;
+  @media (width >= 64rem) {
+    font-size: 56px;
+    line-height: 64px;
+  }
+}
+@utility text-display-responsive {
+  font-size: 36px;
+  line-height: 42px;
+  font-weight: 600;
+  @media (width >= 64rem) {
+    font-size: 48px;
+    line-height: 52px;
+  }
+}
+@utility text-heading {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+@utility text-title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+@utility text-body {
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+}
+@utility text-small {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+@utility text-tagline {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Layout helpers: container 1248 + gutters 16 (mobile) / 96 (desktop) */
+@utility container-site {
+  width: 100%;
+  max-width: calc(var(--container-site) + 2 * 96px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (width >= 64rem) {
+    padding-inline: 96px;
+  }
+}
+@utility section-y {
+  padding-block: 64px;
+  @media (width >= 64rem) {
+    padding-block: 112px;
+  }
+}
+
+/* Article body (sanitized HTML from the API) */
+.prose-m2s {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 28px;
+}
+.prose-m2s > * + * {
+  margin-top: 20px;
+}
+.prose-m2s h2 {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+  margin-top: 48px;
+}
+.prose-m2s h3 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  margin-top: 36px;
+}
+.prose-m2s h4 {
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 600;
+  margin-top: 28px;
+}
+.prose-m2s p {
+  color: var(--ink);
+}
+.prose-m2s a {
+  color: var(--cyan-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-m2s strong {
+  font-weight: 600;
+}
+.prose-m2s ul,
+.prose-m2s ol {
+  padding-left: 24px;
+}
+.prose-m2s ul {
+  list-style: disc;
+}
+.prose-m2s ol {
+  list-style: decimal;
+}
+.prose-m2s li + li {
+  margin-top: 8px;
+}
+.prose-m2s li::marker {
+  color: var(--cyan-ink);
+}
+.prose-m2s blockquote {
+  border-left: 2px solid var(--cyan);
+  padding-left: 20px;
+  color: var(--ink-muted);
+}
+.prose-m2s img {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  max-width: 100%;
+  height: auto;
+}
+.prose-m2s hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.prose-m2s code {
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+}
+.prose-m2s pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  overflow-x: auto;
+}
+.prose-m2s table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.prose-m2s th,
+.prose-m2s td {
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  text-align: left;
+}
