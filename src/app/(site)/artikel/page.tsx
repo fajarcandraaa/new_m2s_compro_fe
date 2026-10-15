@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { ArticleCover } from "@/components/site/ArticleCover";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Pagination } from "@/components/site/Pagination";
 import { Reveal } from "@/components/site/Reveal";
 import { FilterLink } from "@/components/ui/Filter";
 import { getArticles, getTags } from "@/lib/api/public";
 import { formatDate } from "@/lib/format";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 /*
  * This page reads ?tag= and ?page=, so Next renders it on demand. The underlying
@@ -110,6 +111,7 @@ export default async function ArtikelPage({ searchParams }: Props) {
           <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Artikel", path: "/artikel" }])} />
     </>
   );
 }
