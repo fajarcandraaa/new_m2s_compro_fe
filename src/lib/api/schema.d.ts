@@ -1025,7 +1025,7 @@ export interface components {
                 code: "bad_request" | "validation_error" | "unauthorized" | "forbidden" | "csrf_failed" | "not_found" | "method_not_allowed" | "conflict" | "slug_taken" | "payload_too_large" | "unsupported_media_type" | "rate_limited" | "internal_error";
                 /** @description Human-readable message in Bahasa Indonesia, safe to show in a toast. */
                 message: string;
-                /** @description Per-field messages (validation_error, slug_taken, conflict). Keys are **dot paths with numeric indices**, identical to react-hook-form paths: `title`, `seo.description`, `packages.0.priceValue`, `packages.1.features.2`, `deliverables.0.title`, `metrics.1.label`, `initialConditions.3`. An error about an array as a whole (count, duplicates, more than one highlighted package) uses the array key (`metrics`, `tags`, `packages`). Errors not tied to a field appear only in `message`. */
+                /** @description Per-field messages (validation_error, slug_taken, conflict). Keys are **dot paths with numeric indices**, identical to react-hook-form paths: `title`, `seo.description`, `packages.0.priceValue`, `packages.1.features.2`, `deliverables.0.title`, `metrics.1.label`, `initialConditions.3`, `faqs.2.question`. An error about an array as a whole (count, duplicates, more than one highlighted package) uses the array key (`metrics`, `tags`, `packages`, `faqs`). Errors not tied to a field appear only in `message`. */
                 fields?: {
                     [key: string]: string;
                 };
@@ -1178,6 +1178,11 @@ export interface components {
             title: string;
             body: string;
         };
+        /** @description One FAQ entry (v1.1), plain text without HTML. Used by services and articles; the FE renders the list as FAQPage JSON-LD. */
+        FaqItem: {
+            question: string;
+            answer: string;
+        };
         ServicePackage: {
             name: string;
             /** @description e.g. `Mulai dari`; may be empty. */
@@ -1203,11 +1208,6 @@ export interface components {
             /** @description Visually emphasised package. At most one package per service may be highlighted (else 422 on `packages`). */
             highlighted: boolean;
         };
-        /** @description One FAQ entry (plain text). */
-        FaqItem: {
-            question: string;
-            answer: string;
-        };
         /** @description Public service (list and detail share this shape). */
         Service: {
             /** @description URL slug: lowercase letters, digits and single hyphens. */
@@ -1229,7 +1229,7 @@ export interface components {
             systems: string[];
             /** @description Pricing packages (used by web-development); empty otherwise. */
             packages: components["schemas"]["ServicePackage"][];
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
@@ -1255,7 +1255,7 @@ export interface components {
             systems: string[];
             /** @description Pricing packages (used by web-development); empty otherwise. */
             packages: components["schemas"]["ServicePackage"][];
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
@@ -1290,7 +1290,7 @@ export interface components {
             systems: string[];
             /** @description Replaces all packages of the service. Array order = display order. */
             packages: components["schemas"]["ServicePackageInput"][];
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description Optional (v1.1). Replaces all FAQ items; array order = display order. Omitted → `[]`. Question and answer are trimmed and stripped of HTML (bluemonday strict policy); a value that is empty after that or too long → 422 on `faqs.{i}.question` / `faqs.{i}.answer`; more than 10 items → 422 on `faqs`. */
             faqs?: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
@@ -1493,7 +1493,7 @@ export interface components {
             author: string;
             /** @description Sanitised HTML (bluemonday UGC). */
             contentHtml: string;
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
@@ -1542,7 +1542,7 @@ export interface components {
              */
             publishedAt: string | null;
             contentHtml: string;
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
@@ -1582,7 +1582,7 @@ export interface components {
             coverImageUrl: string | null;
             /** @description Defaults to `Tim Mind2Screen` when empty. */
             author?: string;
-            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            /** @description Optional (v1.1). Replaces all FAQ items; array order = display order. Omitted → `[]`. Question and answer are trimmed and stripped of HTML (bluemonday strict policy); a value that is empty after that or too long → 422 on `faqs.{i}.question` / `faqs.{i}.answer`; more than 10 items → 422 on `faqs`. */
             faqs?: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
@@ -2241,6 +2241,28 @@ export interface operations {
                      *             "Dashboard KPI"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang termasuk dalam layanan Custom Software Development?",
+                     *               "answer": "Mulai dari discovery dan pemetaan proses bisnis bersama stakeholder, perancangan sistem, pengembangan per modul, integrasi dengan sistem yang sudah ada, sampai dokumentasi teknis dan knowledge transfer ke tim internal Anda. Sistem yang biasa Kami bangun antara lain HRIS, DMS, ERP internal, approval workflow, portal internal, dan dashboard KPI, semuanya disesuaikan dengan proses bisnis perusahaan Anda, bukan solusi generik."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana cara menentukan biaya pengembangan sistem?",
+                     *               "answer": "Kami memakai dua model kerja. BOS (Based on Scope) memakai harga tetap per proyek dengan ruang lingkup yang dikunci di awal kontrak, cocok jika kebutuhan sudah terdokumentasi. BOR (Based on Request) dibayar sesuai waktu kerja yang dipakai dan ruang lingkupnya bisa berubah tiap sprint, cocok untuk MVP atau pengembangan berkelanjutan. Model yang paling cocok Kami rekomendasikan setelah sesi discovery."
+                     *             },
+                     *             {
+                     *               "question": "Berapa lama waktu yang dibutuhkan untuk membangun sistem internal?",
+                     *               "answer": "Tergantung ruang lingkup dan jumlah modul, sehingga durasi baru bisa diperkirakan dengan jujur setelah discovery, ketika alur kerja dan prioritas fitur sudah jelas. Karena sistem dibangun per modul, modul yang paling mendesak bisa dipakai lebih dulu sementara modul berikutnya dikembangkan bertahap."
+                     *             },
+                     *             {
+                     *               "question": "Apakah ada pendampingan setelah sistem mulai dipakai?",
+                     *               "answer": "Ada. Setelah go-live Kami mendampingi masa stabilisasi, melatih tim internal, dan bisa melanjutkan pengembangan modul berikutnya. Bentuk dan durasi dukungan disepakati di awal sesuai model kerja yang dipilih, supaya tim Anda tahu persis apa yang ditangani dan ke mana harus melapor jika ada kendala."
+                     *             },
+                     *             {
+                     *               "question": "Siapa yang memiliki data dan source code sistem?",
+                     *               "answer": "Data operasional tetap milik perusahaan Anda. Kepemilikan source code dan akses ke server disepakati secara tertulis di kontrak sebelum pengembangan dimulai. Dokumentasi teknis dan knowledge transfer disiapkan supaya tim internal Anda bisa merawat dan mengembangkan sistem tanpa bergantung pada satu orang."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -2284,6 +2306,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang dikerjakan dalam layanan UI/UX Design?",
+                     *               "answer": "User research dan persona, wireframe serta prototipe interaktif, design system, dan high-fidelity mockup yang siap diserahkan ke developer. Untuk produk yang sudah berjalan, Kami juga melakukan UX audit beserta daftar perbaikan berdasarkan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Kenapa perlu riset pengguna sebelum mendesain?",
+                     *               "answer": "Karena desain yang terlihat cantik belum tentu dipakai. Lewat wawancara dan observasi pengguna nyata, Kami memahami konteks kerja mereka lebih dulu, lalu memvalidasi alur lewat wireframe dan prototipe sebelum masuk desain visual. Dengan begitu, perubahan besar terjadi di tahap desain, bukan setelah aplikasi selesai dibangun."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya layanan UI/UX Design?",
+                     *               "answer": "Layanan ini dikerjakan per proyek. Biaya ditentukan dari ruang lingkup, misalnya jumlah alur dan layar, kedalaman riset pengguna, dan apakah dibutuhkan design system lengkap. Rinciannya Kami sampaikan setelah memahami kebutuhan Anda di sesi diskusi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah aplikasi yang sudah berjalan bisa diaudit dan diperbaiki desainnya?",
+                     *               "answer": "Bisa. UX audit mengevaluasi produk yang sudah ada, termasuk bagian yang sering dikeluhkan pengguna, lalu menghasilkan daftar perbaikan berdasarkan prioritas. Perbaikan bisa dikerjakan bertahap tanpa harus mendesain ulang seluruh aplikasi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah hasil desain bisa langsung dipakai oleh tim developer kami?",
+                     *               "answer": "Bisa. Hasil akhirnya berupa design system dan high-fidelity mockup dengan komponen visual yang konsisten, sehingga siap diserahkan ke developer internal Anda maupun vendor lain. Jika diperlukan, pengembangannya juga bisa dilanjutkan bersama tim Kami."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -2331,6 +2375,28 @@ export interface operations {
                      *             "Business Intelligence"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa yang dikerjakan dalam layanan Data Analysis & Processing?",
+                     *               "answer": "Kami memulai dengan data audit dan gap analysis untuk memetakan data yang tersedia dibandingkan data yang dibutuhkan untuk mengambil keputusan. Setelah itu data dari berbagai sumber dikonsolidasikan lewat ETL pipeline, lalu disajikan dalam dashboard KPI, business intelligence, dan laporan yang disesuaikan untuk kebutuhan eksekutif maupun operasional."
+                     *             },
+                     *             {
+                     *               "question": "Data kami tersebar di spreadsheet dan beberapa aplikasi. Apakah bisa disatukan?",
+                     *               "answer": "Bisa. Kondisi seperti ini justru yang paling sering Kami temui. ETL pipeline menarik data dari spreadsheet, database, dan aplikasi yang Anda pakai ke satu tempat yang bisa dipercaya, sehingga laporan bulanan tidak perlu lagi dirangkum manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana model kerja dan biayanya?",
+                     *               "answer": "Tersedia per proyek atau retainer. Per proyek cocok untuk pekerjaan yang jelas batasnya, misalnya membangun pipeline data dan dashboard pertama. Retainer cocok jika Anda butuh pendampingan berkelanjutan, seperti penambahan sumber data, laporan baru, dan perawatan pipeline. Biaya ditentukan dari jumlah sumber data dan kompleksitas laporan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah dashboard diperbarui secara otomatis?",
+                     *               "answer": "Ya. Setelah pipeline berjalan, KPI di dashboard diperbarui otomatis dari sumber datanya, sehingga manajemen dan tiap divisi melihat angka yang sama tanpa menunggu rekap manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana keamanan data perusahaan kami selama proyek?",
+                     *               "answer": "Akses ke data hanya diberikan sesuai kebutuhan pekerjaan dan disepakati bersama di awal proyek. Data tetap milik perusahaan Anda dan hanya diolah untuk tujuan proyek. Jika perusahaan Anda memiliki kebijakan keamanan atau perjanjian kerahasiaan sendiri, Kami mengikuti kebijakan tersebut."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -2374,6 +2440,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Kapan perusahaan membutuhkan IT consultant?",
+                     *               "answer": "Biasanya sebelum berinvestasi di sistem baru, saat harus memilih di antara beberapa vendor atau arsitektur, atau ketika sistem yang berjalan terasa lambat, mahal, dan sulit dikembangkan. Konsultan memberi perspektif independen supaya keputusan teknologi diambil berdasarkan kebutuhan bisnis, bukan sekadar tawaran vendor."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja cakupan layanan IT Consultant?",
+                     *               "answer": "IT audit dan technology assessment terhadap sistem, infrastruktur, dan keamanan yang berjalan saat ini; roadmap digitalisasi bertahap yang realistis dengan anggaran; evaluasi dan seleksi vendor secara objektif; serta pendampingan dan capacity building supaya tim internal bisa mengambil keputusan teknologi sendiri."
+                     *             },
+                     *             {
+                     *               "question": "Apa hasil akhir dari IT audit?",
+                     *               "answer": "Laporan kondisi sistem, infrastruktur, dan keamanan yang berjalan saat ini, beserta risiko yang ditemukan dan rekomendasi perbaikan berdasarkan prioritas. Hasil audit ini juga menjadi dasar penyusunan roadmap digitalisasi."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya konsultasi?",
+                     *               "answer": "Konsultasi bisa per sesi untuk kebutuhan yang spesifik, misalnya review arsitektur atau evaluasi satu vendor, atau retainer untuk pendampingan berkelanjutan selama proses digitalisasi. Ruang lingkup dan bentuk laporan disepakati di awal."
+                     *             },
+                     *             {
+                     *               "question": "Apakah rekomendasi vendor dari Mind2Screen bersifat objektif?",
+                     *               "answer": "Ya. Vendor dan tools dibandingkan dengan kriteria yang disepakati bersama di awal, berdasarkan kebutuhan bisnis dan anggaran Anda. Jika salah satu opsinya adalah dikerjakan oleh tim Kami sendiri, hal itu Kami sampaikan secara terbuka supaya Anda tetap bisa menilai secara adil."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -2468,6 +2556,28 @@ export interface operations {
                      *               ],
                      *               "highlighted": false,
                      *               "sortOrder": 4
+                     *             }
+                     *           ],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Berapa biaya pembuatan website?",
+                     *               "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *               "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *               "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *               "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *               "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *             }
                      *           ],
                      *           "seo": {
@@ -2600,6 +2710,28 @@ export interface operations {
                      *             ],
                      *             "highlighted": false,
                      *             "sortOrder": 4
+                     *           }
+                     *         ],
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Berapa biaya pembuatan website?",
+                     *             "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *           },
+                     *           {
+                     *             "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *             "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *           },
+                     *           {
+                     *             "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *             "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *           },
+                     *           {
+                     *             "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *             "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *             "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *           }
                      *         ],
                      *         "seo": {
@@ -2928,6 +3060,16 @@ export interface operations {
                      *         "readMinutes": 4,
                      *         "author": "Tim Mind2Screen",
                      *         "contentHtml": "<p>Belakangan ini, semakin banyak iklan yang mengatakan:</p>\n<p>“Buat website hanya dengan satu prompt.”\n“Tidak perlu coding.”\n“Klik sekali, website langsung jadi.”</p>\n<p>Kedengarannya luar biasa.</p>\n<p>Bayangkan—Anda hanya perlu mengetik beberapa kalimat, lalu dalam hitungan menit sebuah website langsung muncul di layar.</p>\n<p>Cepat. Praktis. Terlihat mudah.</p>\n<p>Tapi pertanyaannya:</p>\n<p>Kalau memang semudah itu, kenapa masih banyak website yang terlihat bagus… tapi tidak menghasilkan apa-apa?</p>\n<p>Kenapa ada website yang tampak profesional, tapi tombolnya tidak berfungsi?\nKenapa ada bisnis yang sudah punya website, tapi pelanggan tetap bingung harus mulai dari mana?</p>\n<p>Jawabannya sederhana:</p>\n<p>Karena membuat website bukan sekadar soal “jadi”.\nTapi soal apakah website itu benar-benar bekerja untuk tujuan Anda.</p>\n<h2>AI Memang Bisa Membantu. Tapi AI Tidak Bisa Membaca Pikiran Anda.</h2>\n<p>Mari kita luruskan satu hal terlebih dahulu:</p>\n<p>AI Web Generator itu nyata, dan memang sangat membantu.</p>\n<p>Teknologi ini bisa mempercepat proses pembuatan website.</p>\n<p>Namun, AI tetap membutuhkan arahan.</p>\n<p>AI tidak tahu:</p>\n<ul>\n<li>siapa target pelanggan Anda,</li>\n<li>apa tujuan website Anda,</li>\n<li>informasi apa yang harus ditampilkan,</li>\n<li>bagaimana alur pelanggan menggunakan website,</li>\n<li>fitur apa yang sebenarnya Anda butuhkan.</li>\n</ul>\n<p>Jika Anda hanya memberi perintah sederhana seperti:</p>\n<blockquote>“Buatkan website untuk bisnis saya.”</blockquote>\n<p>“Buatkan website untuk bisnis saya.”</p>\n<p>AI tetap akan menghasilkan sesuatu.</p>\n<p>Namun sering kali hasilnya hanya berupa template umum yang terlihat rapi, tetapi belum tentu sesuai kebutuhan.</p>\n<p>Ibarat meminta seseorang membangun rumah tanpa menjelaskan:</p>\n<ul>\n<li>berapa jumlah penghuninya,</li>\n<li>butuh berapa kamar,</li>\n<li>apakah perlu garasi,</li>\n<li>atau bagaimana aktivitas sehari-harinya.</li>\n</ul>\n<p>Rumahnya mungkin tetap jadi.</p>\n<p>Tapi belum tentu nyaman ditinggali.</p>\n<p>Begitu juga website.</p>\n<h2>Tantangan Terbesar Bukan Membuat Website, Tapi Menentukan Apa yang Dibutuhkan</h2>\n<p>Banyak orang berpikir tantangan utama adalah membangun website.</p>\n<p>Padahal yang jauh lebih sulit justru:</p>\n<ul>\n<li>memahami kebutuhan bisnis,</li>\n<li>mengetahui masalah pelanggan,</li>\n<li>menentukan fitur yang benar-benar penting,</li>\n<li>menyusun alur yang mudah dipahami,</li>\n<li>memastikan website membantu mencapai tujuan.</li>\n</ul>\n<p>Contohnya:</p>\n<p>Jika Anda memiliki bisnis kuliner, pertanyaannya bukan hanya:</p>\n<blockquote>“Bagaimana membuat website?”</blockquote>\n<p>“Bagaimana membuat website?”</p>\n<p>Tetapi juga:</p>\n<ul>\n<li>Apakah pelanggan harus bisa pesan langsung?</li>\n<li>Apakah tombolnya menuju WhatsApp?</li>\n<li>Apakah perlu daftar menu digital?</li>\n<li>Apakah perlu sistem booking?</li>\n</ul>\n<p>AI bisa membantu membuat tampilan.</p>\n<p>Tetapi tetap manusia yang harus menentukan arah.</p>\n<h2>Website yang Terlihat Bagus Belum Tentu Siap Digunakan</h2>\n<p>Ini salah satu kesalahpahaman terbesar.</p>\n<p>Karena AI sering menghasilkan desain yang menarik, banyak orang merasa pekerjaannya sudah selesai.</p>\n<p>Padahal website bukan hanya soal penampilan.</p>\n<p>Ada banyak hal penting yang harus benar-benar bekerja:</p>\n<ul>\n<li>tombol harus bisa diklik,</li>\n<li>formulir harus bisa mengirim data,</li>\n<li>pelanggan harus tahu harus menekan apa,</li>\n<li>website harus nyaman dibuka di HP,</li>\n<li>halaman harus cepat dimuat,</li>\n<li>sistem harus aman.</li>\n</ul>\n<p>Bayangkan Anda punya website toko online.</p>\n<p>Tampilannya cantik.</p>\n<p>Produknya sudah lengkap.</p>\n<p>Namun tombol “Pesan Sekarang” ternyata tidak berfungsi.</p>\n<p>Atau pelanggan bingung harus klik bagian mana untuk membeli.</p>\n<p>Akhirnya?</p>\n<p>Website tetap online.</p>\n<p>Tapi tidak menghasilkan penjualan.</p>\n<p>Terlihat rapi di luar.\nNamun tidak bekerja di dalam.</p>\n<h2>Cara Cerdas Menggunakan AI Web Generator</h2>\n<p>AI bukan sesuatu yang harus dihindari.</p>\n<p>Justru jika digunakan dengan benar, AI bisa menjadi alat yang sangat membantu.</p>\n<p>Berikut beberapa cara menggunakannya dengan lebih bijak:</p>\n<h2>✓ Pahami kebutuhan Anda terlebih dahulu</h2>\n<p>Sebelum menggunakan AI, coba jawab pertanyaan berikut:</p>\n<ul>\n<li>Apa tujuan website saya?</li>\n<li>Siapa pengguna utama website ini?</li>\n<li>Masalah apa yang ingin saya selesaikan?</li>\n<li>Informasi apa yang wajib tersedia?</li>\n<li>Apa tindakan yang ingin dilakukan pengunjung?</li>\n</ul>\n<p>Semakin jelas jawabannya, semakin baik hasil AI.</p>\n<h2>✓ Gunakan AI untuk membantu berpikir, bukan hanya membuat</h2>\n<p>Jangan hanya meminta:</p>\n<blockquote>“Buatkan website.”</blockquote>\n<p>“Buatkan website.”</p>\n<p>Coba gunakan AI untuk berdiskusi.</p>\n<p>Contohnya:</p>\n<blockquote>“Bantu saya menyusun struktur website untuk bisnis laundry.”</blockquote>\n<p>“Bantu saya menyusun struktur website untuk bisnis laundry.”</p>\n<blockquote>“Fitur apa saja yang cocok untuk website klinik?”</blockquote>\n<p>“Fitur apa saja yang cocok untuk website klinik?”</p>\n<blockquote>“Bagaimana alur pemesanan sederhana untuk toko online?”</blockquote>\n<p>“Bagaimana alur pemesanan sederhana untuk toko online?”</p>\n<p>Dengan begitu, AI menjadi partner berpikir, bukan sekadar alat pembuat.</p>\n<h2>✓ Jangan langsung puas dengan hasil pertama</h2>\n<p>Hasil pertama dari AI biasanya hanyalah draft awal.</p>\n<p>Selalu periksa kembali:</p>\n<ul>\n<li>Apakah informasinya benar?</li>\n<li>Apakah mudah dipahami orang lain?</li>\n<li>Apakah alurnya masuk akal?</li>\n<li>Apakah semua tombol bekerja?</li>\n</ul>\n<p>Jika perlu, minta keluarga atau teman mencoba website Anda.</p>\n<p>Perhatikan apakah mereka kebingungan.</p>\n<p>Karena sering kali, masalah baru terlihat saat digunakan oleh orang lain.</p>\n<h2>✓ Ketahui kapan perlu bantuan profesional</h2>\n<p>Untuk kebutuhan sederhana, AI bisa sangat membantu.</p>\n<p>Namun jika website Anda digunakan untuk:</p>\n<ul>\n<li>bisnis serius,</li>\n<li>pemesanan online,</li>\n<li>pembayaran digital,</li>\n<li>integrasi data,</li>\n<li>keamanan pelanggan,</li>\n</ul>\n<p>maka tetap bijak untuk melibatkan tenaga profesional.</p>\n<p>AI bisa mempercepat pekerjaan.</p>\n<p>Tapi pengalaman manusia tetap penting untuk memastikan semuanya benar-benar berjalan.</p>\n<h2>Kesimpulan</h2>\n<p>AI memang membuat proses pembuatan website menjadi jauh lebih cepat.</p>\n<p>Namun cepat bukan berarti otomatis tepat.</p>\n<p>AI bisa membantu Anda membangun website.</p>\n<p>Tetapi AI tidak bisa menggantikan:</p>\n<ul>\n<li>pemahaman bisnis,</li>\n<li>logika alur pengguna,</li>\n<li>pengalaman,</li>\n<li>dan proses berpikir yang matang.</li>\n</ul>\n<p>Tanpa arah yang jelas, AI hanya akan membantu Anda membuat kekacauan… dengan lebih cepat.</p>\n<p>Gunakan AI sebagai alat bantu.</p>\n<p>Bukan sebagai pengganti keputusan.</p>\n<p>Karena pada akhirnya, teknologi terbaik tetap membutuhkan manusia yang tahu ke mana harus melangkah.</p>\n<p>Artikel ini dibuat untuk membantu masyarakat memahami teknologi dengan lebih bijak. Jika Anda membutuhkan konsultasi pengembangan website atau solusi digital untuk bisnis Anda, tim Mind2Screen siap membantu.</p>",
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                     *             "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                     *             "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                     *           }
+                     *         ],
                      *         "seo": {
                      *           "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                      *           "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
@@ -3679,6 +3821,28 @@ export interface operations {
                      *             "Dashboard KPI"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang termasuk dalam layanan Custom Software Development?",
+                     *               "answer": "Mulai dari discovery dan pemetaan proses bisnis bersama stakeholder, perancangan sistem, pengembangan per modul, integrasi dengan sistem yang sudah ada, sampai dokumentasi teknis dan knowledge transfer ke tim internal Anda. Sistem yang biasa Kami bangun antara lain HRIS, DMS, ERP internal, approval workflow, portal internal, dan dashboard KPI, semuanya disesuaikan dengan proses bisnis perusahaan Anda, bukan solusi generik."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana cara menentukan biaya pengembangan sistem?",
+                     *               "answer": "Kami memakai dua model kerja. BOS (Based on Scope) memakai harga tetap per proyek dengan ruang lingkup yang dikunci di awal kontrak, cocok jika kebutuhan sudah terdokumentasi. BOR (Based on Request) dibayar sesuai waktu kerja yang dipakai dan ruang lingkupnya bisa berubah tiap sprint, cocok untuk MVP atau pengembangan berkelanjutan. Model yang paling cocok Kami rekomendasikan setelah sesi discovery."
+                     *             },
+                     *             {
+                     *               "question": "Berapa lama waktu yang dibutuhkan untuk membangun sistem internal?",
+                     *               "answer": "Tergantung ruang lingkup dan jumlah modul, sehingga durasi baru bisa diperkirakan dengan jujur setelah discovery, ketika alur kerja dan prioritas fitur sudah jelas. Karena sistem dibangun per modul, modul yang paling mendesak bisa dipakai lebih dulu sementara modul berikutnya dikembangkan bertahap."
+                     *             },
+                     *             {
+                     *               "question": "Apakah ada pendampingan setelah sistem mulai dipakai?",
+                     *               "answer": "Ada. Setelah go-live Kami mendampingi masa stabilisasi, melatih tim internal, dan bisa melanjutkan pengembangan modul berikutnya. Bentuk dan durasi dukungan disepakati di awal sesuai model kerja yang dipilih, supaya tim Anda tahu persis apa yang ditangani dan ke mana harus melapor jika ada kendala."
+                     *             },
+                     *             {
+                     *               "question": "Siapa yang memiliki data dan source code sistem?",
+                     *               "answer": "Data operasional tetap milik perusahaan Anda. Kepemilikan source code dan akses ke server disepakati secara tertulis di kontrak sebelum pengembangan dimulai. Dokumentasi teknis dan knowledge transfer disiapkan supaya tim internal Anda bisa merawat dan mengembangkan sistem tanpa bergantung pada satu orang."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -3726,6 +3890,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang dikerjakan dalam layanan UI/UX Design?",
+                     *               "answer": "User research dan persona, wireframe serta prototipe interaktif, design system, dan high-fidelity mockup yang siap diserahkan ke developer. Untuk produk yang sudah berjalan, Kami juga melakukan UX audit beserta daftar perbaikan berdasarkan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Kenapa perlu riset pengguna sebelum mendesain?",
+                     *               "answer": "Karena desain yang terlihat cantik belum tentu dipakai. Lewat wawancara dan observasi pengguna nyata, Kami memahami konteks kerja mereka lebih dulu, lalu memvalidasi alur lewat wireframe dan prototipe sebelum masuk desain visual. Dengan begitu, perubahan besar terjadi di tahap desain, bukan setelah aplikasi selesai dibangun."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya layanan UI/UX Design?",
+                     *               "answer": "Layanan ini dikerjakan per proyek. Biaya ditentukan dari ruang lingkup, misalnya jumlah alur dan layar, kedalaman riset pengguna, dan apakah dibutuhkan design system lengkap. Rinciannya Kami sampaikan setelah memahami kebutuhan Anda di sesi diskusi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah aplikasi yang sudah berjalan bisa diaudit dan diperbaiki desainnya?",
+                     *               "answer": "Bisa. UX audit mengevaluasi produk yang sudah ada, termasuk bagian yang sering dikeluhkan pengguna, lalu menghasilkan daftar perbaikan berdasarkan prioritas. Perbaikan bisa dikerjakan bertahap tanpa harus mendesain ulang seluruh aplikasi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah hasil desain bisa langsung dipakai oleh tim developer kami?",
+                     *               "answer": "Bisa. Hasil akhirnya berupa design system dan high-fidelity mockup dengan komponen visual yang konsisten, sehingga siap diserahkan ke developer internal Anda maupun vendor lain. Jika diperlukan, pengembangannya juga bisa dilanjutkan bersama tim Kami."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -3777,6 +3963,28 @@ export interface operations {
                      *             "Business Intelligence"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa yang dikerjakan dalam layanan Data Analysis & Processing?",
+                     *               "answer": "Kami memulai dengan data audit dan gap analysis untuk memetakan data yang tersedia dibandingkan data yang dibutuhkan untuk mengambil keputusan. Setelah itu data dari berbagai sumber dikonsolidasikan lewat ETL pipeline, lalu disajikan dalam dashboard KPI, business intelligence, dan laporan yang disesuaikan untuk kebutuhan eksekutif maupun operasional."
+                     *             },
+                     *             {
+                     *               "question": "Data kami tersebar di spreadsheet dan beberapa aplikasi. Apakah bisa disatukan?",
+                     *               "answer": "Bisa. Kondisi seperti ini justru yang paling sering Kami temui. ETL pipeline menarik data dari spreadsheet, database, dan aplikasi yang Anda pakai ke satu tempat yang bisa dipercaya, sehingga laporan bulanan tidak perlu lagi dirangkum manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana model kerja dan biayanya?",
+                     *               "answer": "Tersedia per proyek atau retainer. Per proyek cocok untuk pekerjaan yang jelas batasnya, misalnya membangun pipeline data dan dashboard pertama. Retainer cocok jika Anda butuh pendampingan berkelanjutan, seperti penambahan sumber data, laporan baru, dan perawatan pipeline. Biaya ditentukan dari jumlah sumber data dan kompleksitas laporan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah dashboard diperbarui secara otomatis?",
+                     *               "answer": "Ya. Setelah pipeline berjalan, KPI di dashboard diperbarui otomatis dari sumber datanya, sehingga manajemen dan tiap divisi melihat angka yang sama tanpa menunggu rekap manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana keamanan data perusahaan kami selama proyek?",
+                     *               "answer": "Akses ke data hanya diberikan sesuai kebutuhan pekerjaan dan disepakati bersama di awal proyek. Data tetap milik perusahaan Anda dan hanya diolah untuk tujuan proyek. Jika perusahaan Anda memiliki kebijakan keamanan atau perjanjian kerahasiaan sendiri, Kami mengikuti kebijakan tersebut."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -3824,6 +4032,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Kapan perusahaan membutuhkan IT consultant?",
+                     *               "answer": "Biasanya sebelum berinvestasi di sistem baru, saat harus memilih di antara beberapa vendor atau arsitektur, atau ketika sistem yang berjalan terasa lambat, mahal, dan sulit dikembangkan. Konsultan memberi perspektif independen supaya keputusan teknologi diambil berdasarkan kebutuhan bisnis, bukan sekadar tawaran vendor."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja cakupan layanan IT Consultant?",
+                     *               "answer": "IT audit dan technology assessment terhadap sistem, infrastruktur, dan keamanan yang berjalan saat ini; roadmap digitalisasi bertahap yang realistis dengan anggaran; evaluasi dan seleksi vendor secara objektif; serta pendampingan dan capacity building supaya tim internal bisa mengambil keputusan teknologi sendiri."
+                     *             },
+                     *             {
+                     *               "question": "Apa hasil akhir dari IT audit?",
+                     *               "answer": "Laporan kondisi sistem, infrastruktur, dan keamanan yang berjalan saat ini, beserta risiko yang ditemukan dan rekomendasi perbaikan berdasarkan prioritas. Hasil audit ini juga menjadi dasar penyusunan roadmap digitalisasi."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya konsultasi?",
+                     *               "answer": "Konsultasi bisa per sesi untuk kebutuhan yang spesifik, misalnya review arsitektur atau evaluasi satu vendor, atau retainer untuk pendampingan berkelanjutan selama proses digitalisasi. Ruang lingkup dan bentuk laporan disepakati di awal."
+                     *             },
+                     *             {
+                     *               "question": "Apakah rekomendasi vendor dari Mind2Screen bersifat objektif?",
+                     *               "answer": "Ya. Vendor dan tools dibandingkan dengan kriteria yang disepakati bersama di awal, berdasarkan kebutuhan bisnis dan anggaran Anda. Jika salah satu opsinya adalah dikerjakan oleh tim Kami sendiri, hal itu Kami sampaikan secara terbuka supaya Anda tetap bisa menilai secara adil."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -3922,6 +4152,28 @@ export interface operations {
                      *               ],
                      *               "highlighted": false,
                      *               "sortOrder": 4
+                     *             }
+                     *           ],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Berapa biaya pembuatan website?",
+                     *               "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *               "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *               "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *               "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *               "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *             }
                      *           ],
                      *           "seo": {
@@ -4047,6 +4299,28 @@ export interface operations {
                  *           "highlighted": false
                  *         }
                  *       ],
+                 *       "faqs": [
+                 *         {
+                 *           "question": "Berapa biaya pembuatan website?",
+                 *           "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                 *         },
+                 *         {
+                 *           "question": "Apa saja yang sudah termasuk dalam harga?",
+                 *           "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                 *         },
+                 *         {
+                 *           "question": "Apakah saya bisa mengelola konten website sendiri?",
+                 *           "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                 *         },
+                 *         {
+                 *           "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                 *           "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                 *         },
+                 *         {
+                 *           "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                 *           "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
+                 *         }
+                 *       ],
                  *       "seo": {
                  *         "title": null,
                  *         "description": null,
@@ -4156,6 +4430,28 @@ export interface operations {
                      *             ],
                      *             "highlighted": false,
                      *             "sortOrder": 4
+                     *           }
+                     *         ],
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Berapa biaya pembuatan website?",
+                     *             "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *           },
+                     *           {
+                     *             "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *             "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *           },
+                     *           {
+                     *             "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *             "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *           },
+                     *           {
+                     *             "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *             "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *             "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *           }
                      *         ],
                      *         "seo": {
@@ -4292,6 +4588,28 @@ export interface operations {
                      *             "sortOrder": 4
                      *           }
                      *         ],
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Berapa biaya pembuatan website?",
+                     *             "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *           },
+                     *           {
+                     *             "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *             "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *           },
+                     *           {
+                     *             "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *             "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *           },
+                     *           {
+                     *             "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *             "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *             "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
+                     *           }
+                     *         ],
                      *         "seo": {
                      *           "title": null,
                      *           "description": null,
@@ -4411,6 +4729,28 @@ export interface operations {
                  *           "highlighted": false
                  *         }
                  *       ],
+                 *       "faqs": [
+                 *         {
+                 *           "question": "Berapa biaya pembuatan website?",
+                 *           "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                 *         },
+                 *         {
+                 *           "question": "Apa saja yang sudah termasuk dalam harga?",
+                 *           "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                 *         },
+                 *         {
+                 *           "question": "Apakah saya bisa mengelola konten website sendiri?",
+                 *           "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                 *         },
+                 *         {
+                 *           "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                 *           "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                 *         },
+                 *         {
+                 *           "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                 *           "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
+                 *         }
+                 *       ],
                  *       "seo": {
                  *         "title": null,
                  *         "description": null,
@@ -4520,6 +4860,28 @@ export interface operations {
                      *             ],
                      *             "highlighted": false,
                      *             "sortOrder": 4
+                     *           }
+                     *         ],
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Berapa biaya pembuatan website?",
+                     *             "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *           },
+                     *           {
+                     *             "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *             "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *           },
+                     *           {
+                     *             "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *             "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *           },
+                     *           {
+                     *             "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *             "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *             "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *           }
                      *         ],
                      *         "seo": {
@@ -4643,6 +5005,28 @@ export interface operations {
                      *             "Dashboard KPI"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang termasuk dalam layanan Custom Software Development?",
+                     *               "answer": "Mulai dari discovery dan pemetaan proses bisnis bersama stakeholder, perancangan sistem, pengembangan per modul, integrasi dengan sistem yang sudah ada, sampai dokumentasi teknis dan knowledge transfer ke tim internal Anda. Sistem yang biasa Kami bangun antara lain HRIS, DMS, ERP internal, approval workflow, portal internal, dan dashboard KPI, semuanya disesuaikan dengan proses bisnis perusahaan Anda, bukan solusi generik."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana cara menentukan biaya pengembangan sistem?",
+                     *               "answer": "Kami memakai dua model kerja. BOS (Based on Scope) memakai harga tetap per proyek dengan ruang lingkup yang dikunci di awal kontrak, cocok jika kebutuhan sudah terdokumentasi. BOR (Based on Request) dibayar sesuai waktu kerja yang dipakai dan ruang lingkupnya bisa berubah tiap sprint, cocok untuk MVP atau pengembangan berkelanjutan. Model yang paling cocok Kami rekomendasikan setelah sesi discovery."
+                     *             },
+                     *             {
+                     *               "question": "Berapa lama waktu yang dibutuhkan untuk membangun sistem internal?",
+                     *               "answer": "Tergantung ruang lingkup dan jumlah modul, sehingga durasi baru bisa diperkirakan dengan jujur setelah discovery, ketika alur kerja dan prioritas fitur sudah jelas. Karena sistem dibangun per modul, modul yang paling mendesak bisa dipakai lebih dulu sementara modul berikutnya dikembangkan bertahap."
+                     *             },
+                     *             {
+                     *               "question": "Apakah ada pendampingan setelah sistem mulai dipakai?",
+                     *               "answer": "Ada. Setelah go-live Kami mendampingi masa stabilisasi, melatih tim internal, dan bisa melanjutkan pengembangan modul berikutnya. Bentuk dan durasi dukungan disepakati di awal sesuai model kerja yang dipilih, supaya tim Anda tahu persis apa yang ditangani dan ke mana harus melapor jika ada kendala."
+                     *             },
+                     *             {
+                     *               "question": "Siapa yang memiliki data dan source code sistem?",
+                     *               "answer": "Data operasional tetap milik perusahaan Anda. Kepemilikan source code dan akses ke server disepakati secara tertulis di kontrak sebelum pengembangan dimulai. Dokumentasi teknis dan knowledge transfer disiapkan supaya tim internal Anda bisa merawat dan mengembangkan sistem tanpa bergantung pada satu orang."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -4690,6 +5074,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa saja yang dikerjakan dalam layanan UI/UX Design?",
+                     *               "answer": "User research dan persona, wireframe serta prototipe interaktif, design system, dan high-fidelity mockup yang siap diserahkan ke developer. Untuk produk yang sudah berjalan, Kami juga melakukan UX audit beserta daftar perbaikan berdasarkan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Kenapa perlu riset pengguna sebelum mendesain?",
+                     *               "answer": "Karena desain yang terlihat cantik belum tentu dipakai. Lewat wawancara dan observasi pengguna nyata, Kami memahami konteks kerja mereka lebih dulu, lalu memvalidasi alur lewat wireframe dan prototipe sebelum masuk desain visual. Dengan begitu, perubahan besar terjadi di tahap desain, bukan setelah aplikasi selesai dibangun."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya layanan UI/UX Design?",
+                     *               "answer": "Layanan ini dikerjakan per proyek. Biaya ditentukan dari ruang lingkup, misalnya jumlah alur dan layar, kedalaman riset pengguna, dan apakah dibutuhkan design system lengkap. Rinciannya Kami sampaikan setelah memahami kebutuhan Anda di sesi diskusi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah aplikasi yang sudah berjalan bisa diaudit dan diperbaiki desainnya?",
+                     *               "answer": "Bisa. UX audit mengevaluasi produk yang sudah ada, termasuk bagian yang sering dikeluhkan pengguna, lalu menghasilkan daftar perbaikan berdasarkan prioritas. Perbaikan bisa dikerjakan bertahap tanpa harus mendesain ulang seluruh aplikasi."
+                     *             },
+                     *             {
+                     *               "question": "Apakah hasil desain bisa langsung dipakai oleh tim developer kami?",
+                     *               "answer": "Bisa. Hasil akhirnya berupa design system dan high-fidelity mockup dengan komponen visual yang konsisten, sehingga siap diserahkan ke developer internal Anda maupun vendor lain. Jika diperlukan, pengembangannya juga bisa dilanjutkan bersama tim Kami."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -4741,6 +5147,28 @@ export interface operations {
                      *             "Business Intelligence"
                      *           ],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Apa yang dikerjakan dalam layanan Data Analysis & Processing?",
+                     *               "answer": "Kami memulai dengan data audit dan gap analysis untuk memetakan data yang tersedia dibandingkan data yang dibutuhkan untuk mengambil keputusan. Setelah itu data dari berbagai sumber dikonsolidasikan lewat ETL pipeline, lalu disajikan dalam dashboard KPI, business intelligence, dan laporan yang disesuaikan untuk kebutuhan eksekutif maupun operasional."
+                     *             },
+                     *             {
+                     *               "question": "Data kami tersebar di spreadsheet dan beberapa aplikasi. Apakah bisa disatukan?",
+                     *               "answer": "Bisa. Kondisi seperti ini justru yang paling sering Kami temui. ETL pipeline menarik data dari spreadsheet, database, dan aplikasi yang Anda pakai ke satu tempat yang bisa dipercaya, sehingga laporan bulanan tidak perlu lagi dirangkum manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana model kerja dan biayanya?",
+                     *               "answer": "Tersedia per proyek atau retainer. Per proyek cocok untuk pekerjaan yang jelas batasnya, misalnya membangun pipeline data dan dashboard pertama. Retainer cocok jika Anda butuh pendampingan berkelanjutan, seperti penambahan sumber data, laporan baru, dan perawatan pipeline. Biaya ditentukan dari jumlah sumber data dan kompleksitas laporan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah dashboard diperbarui secara otomatis?",
+                     *               "answer": "Ya. Setelah pipeline berjalan, KPI di dashboard diperbarui otomatis dari sumber datanya, sehingga manajemen dan tiap divisi melihat angka yang sama tanpa menunggu rekap manual."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana keamanan data perusahaan kami selama proyek?",
+                     *               "answer": "Akses ke data hanya diberikan sesuai kebutuhan pekerjaan dan disepakati bersama di awal proyek. Data tetap milik perusahaan Anda dan hanya diolah untuk tujuan proyek. Jika perusahaan Anda memiliki kebijakan keamanan atau perjanjian kerahasiaan sendiri, Kami mengikuti kebijakan tersebut."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -4788,6 +5216,28 @@ export interface operations {
                      *           ],
                      *           "systems": [],
                      *           "packages": [],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Kapan perusahaan membutuhkan IT consultant?",
+                     *               "answer": "Biasanya sebelum berinvestasi di sistem baru, saat harus memilih di antara beberapa vendor atau arsitektur, atau ketika sistem yang berjalan terasa lambat, mahal, dan sulit dikembangkan. Konsultan memberi perspektif independen supaya keputusan teknologi diambil berdasarkan kebutuhan bisnis, bukan sekadar tawaran vendor."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja cakupan layanan IT Consultant?",
+                     *               "answer": "IT audit dan technology assessment terhadap sistem, infrastruktur, dan keamanan yang berjalan saat ini; roadmap digitalisasi bertahap yang realistis dengan anggaran; evaluasi dan seleksi vendor secara objektif; serta pendampingan dan capacity building supaya tim internal bisa mengambil keputusan teknologi sendiri."
+                     *             },
+                     *             {
+                     *               "question": "Apa hasil akhir dari IT audit?",
+                     *               "answer": "Laporan kondisi sistem, infrastruktur, dan keamanan yang berjalan saat ini, beserta risiko yang ditemukan dan rekomendasi perbaikan berdasarkan prioritas. Hasil audit ini juga menjadi dasar penyusunan roadmap digitalisasi."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana sistem biaya konsultasi?",
+                     *               "answer": "Konsultasi bisa per sesi untuk kebutuhan yang spesifik, misalnya review arsitektur atau evaluasi satu vendor, atau retainer untuk pendampingan berkelanjutan selama proses digitalisasi. Ruang lingkup dan bentuk laporan disepakati di awal."
+                     *             },
+                     *             {
+                     *               "question": "Apakah rekomendasi vendor dari Mind2Screen bersifat objektif?",
+                     *               "answer": "Ya. Vendor dan tools dibandingkan dengan kriteria yang disepakati bersama di awal, berdasarkan kebutuhan bisnis dan anggaran Anda. Jika salah satu opsinya adalah dikerjakan oleh tim Kami sendiri, hal itu Kami sampaikan secara terbuka supaya Anda tetap bisa menilai secara adil."
+                     *             }
+                     *           ],
                      *           "seo": {
                      *             "title": null,
                      *             "description": null,
@@ -4886,6 +5336,28 @@ export interface operations {
                      *               ],
                      *               "highlighted": false,
                      *               "sortOrder": 4
+                     *             }
+                     *           ],
+                     *           "faqs": [
+                     *             {
+                     *               "question": "Berapa biaya pembuatan website?",
+                     *               "answer": "Paket Starter mulai dari Rp 3.500.000 untuk landing page atau company profile sederhana hingga 5 halaman. Paket Growth, Professional, dan Corporate disesuaikan dengan kebutuhan, misalnya CMS, fitur custom, integrasi API, atau multi-bahasa, sehingga harganya Kami sampaikan setelah diskusi kebutuhan."
+                     *             },
+                     *             {
+                     *               "question": "Apa saja yang sudah termasuk dalam harga?",
+                     *               "answer": "Harga sudah termasuk domain .com untuk satu tahun dan maintenance sesuai paket: 1 bulan untuk Starter, 2 bulan untuk Growth, dan 3 bulan untuk Professional. Paket Corporate mendapatkan dukungan prioritas."
+                     *             },
+                     *             {
+                     *               "question": "Apakah saya bisa mengelola konten website sendiri?",
+                     *               "answer": "Bisa. Mulai paket Growth, website dilengkapi CMS sehingga Anda dapat mengelola artikel, promo, dan konten lain sendiri tanpa perlu menghubungi developer setiap kali ada perubahan."
+                     *             },
+                     *             {
+                     *               "question": "Apakah website sudah dioptimasi untuk mesin pencari?",
+                     *               "answer": "Ya. SEO teknis Kami perhatikan sejak awal: kecepatan halaman, Core Web Vitals, dan struktur yang mudah dibaca mesin pencari. Untuk website multi-bahasa dengan kebutuhan SEO teknis yang lebih luas, tersedia paket Corporate."
+                     *             },
+                     *             {
+                     *               "question": "Bagaimana jika butuh bantuan setelah masa maintenance selesai?",
+                     *               "answer": "Anda tetap bisa menghubungi Kami untuk perbaikan, penambahan fitur, atau pengembangan lanjutan. Ruang lingkup dan biayanya disepakati sesuai kebutuhan saat itu."
                      *             }
                      *           ],
                      *           "seo": {
@@ -5729,6 +6201,16 @@ export interface operations {
                  *       ],
                  *       "coverImageUrl": null,
                  *       "author": "Tim Mind2Screen",
+                 *       "faqs": [
+                 *         {
+                 *           "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                 *           "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                 *         },
+                 *         {
+                 *           "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                 *           "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                 *         }
+                 *       ],
                  *       "seo": {
                  *         "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                  *         "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
@@ -5764,6 +6246,16 @@ export interface operations {
                      *         "readMinutes": 4,
                      *         "author": "Tim Mind2Screen",
                      *         "contentHtml": "<p>Belakangan ini, semakin banyak iklan yang mengatakan:</p>\n<p>“Buat website hanya dengan satu prompt.”\n“Tidak perlu coding.”\n“Klik sekali, website langsung jadi.”</p>\n<p>Kedengarannya luar biasa.</p>\n<p>Bayangkan—Anda hanya perlu mengetik beberapa kalimat, lalu dalam hitungan menit sebuah website langsung muncul di layar.</p>\n<p>Cepat. Praktis. Terlihat mudah.</p>\n<p>Tapi pertanyaannya:</p>\n<p>Kalau memang semudah itu, kenapa masih banyak website yang terlihat bagus… tapi tidak menghasilkan apa-apa?</p>\n<p>Kenapa ada website yang tampak profesional, tapi tombolnya tidak berfungsi?\nKenapa ada bisnis yang sudah punya website, tapi pelanggan tetap bingung harus mulai dari mana?</p>\n<p>Jawabannya sederhana:</p>\n<p>Karena membuat website bukan sekadar soal “jadi”.\nTapi soal apakah website itu benar-benar bekerja untuk tujuan Anda.</p>\n",
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                     *             "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                     *             "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                     *           }
+                     *         ],
                      *         "seo": {
                      *           "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                      *           "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
@@ -5824,6 +6316,16 @@ export interface operations {
                      *         "readMinutes": 4,
                      *         "author": "Tim Mind2Screen",
                      *         "contentHtml": "<p>Belakangan ini, semakin banyak iklan yang mengatakan:</p>\n<p>“Buat website hanya dengan satu prompt.”\n“Tidak perlu coding.”\n“Klik sekali, website langsung jadi.”</p>\n<p>Kedengarannya luar biasa.</p>\n<p>Bayangkan—Anda hanya perlu mengetik beberapa kalimat, lalu dalam hitungan menit sebuah website langsung muncul di layar.</p>\n<p>Cepat. Praktis. Terlihat mudah.</p>\n<p>Tapi pertanyaannya:</p>\n<p>Kalau memang semudah itu, kenapa masih banyak website yang terlihat bagus… tapi tidak menghasilkan apa-apa?</p>\n<p>Kenapa ada website yang tampak profesional, tapi tombolnya tidak berfungsi?\nKenapa ada bisnis yang sudah punya website, tapi pelanggan tetap bingung harus mulai dari mana?</p>\n<p>Jawabannya sederhana:</p>\n<p>Karena membuat website bukan sekadar soal “jadi”.\nTapi soal apakah website itu benar-benar bekerja untuk tujuan Anda.</p>\n",
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                     *             "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                     *             "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                     *           }
+                     *         ],
                      *         "seo": {
                      *           "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                      *           "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
@@ -5871,6 +6373,16 @@ export interface operations {
                  *       ],
                  *       "coverImageUrl": null,
                  *       "author": "Tim Mind2Screen",
+                 *       "faqs": [
+                 *         {
+                 *           "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                 *           "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                 *         },
+                 *         {
+                 *           "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                 *           "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                 *         }
+                 *       ],
                  *       "seo": {
                  *         "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                  *         "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
@@ -5906,6 +6418,16 @@ export interface operations {
                      *         "readMinutes": 4,
                      *         "author": "Tim Mind2Screen",
                      *         "contentHtml": "<p>Belakangan ini, semakin banyak iklan yang mengatakan:</p>\n<p>“Buat website hanya dengan satu prompt.”\n“Tidak perlu coding.”\n“Klik sekali, website langsung jadi.”</p>\n<p>Kedengarannya luar biasa.</p>\n<p>Bayangkan—Anda hanya perlu mengetik beberapa kalimat, lalu dalam hitungan menit sebuah website langsung muncul di layar.</p>\n<p>Cepat. Praktis. Terlihat mudah.</p>\n<p>Tapi pertanyaannya:</p>\n<p>Kalau memang semudah itu, kenapa masih banyak website yang terlihat bagus… tapi tidak menghasilkan apa-apa?</p>\n<p>Kenapa ada website yang tampak profesional, tapi tombolnya tidak berfungsi?\nKenapa ada bisnis yang sudah punya website, tapi pelanggan tetap bingung harus mulai dari mana?</p>\n<p>Jawabannya sederhana:</p>\n<p>Karena membuat website bukan sekadar soal “jadi”.\nTapi soal apakah website itu benar-benar bekerja untuk tujuan Anda.</p>\n",
+                     *         "faqs": [
+                     *           {
+                     *             "question": "Apakah website buatan AI bisa langsung dipakai untuk bisnis?",
+                     *             "answer": "Untuk kebutuhan sederhana, AI bisa sangat membantu. Namun website untuk bisnis serius tetap membutuhkan pemahaman tujuan, target pelanggan, dan alur pengguna yang jelas, dan hal itu tidak bisa ditebak AI dari satu prompt."
+                     *           },
+                     *           {
+                     *             "question": "Bagaimana cara memakai AI dengan bijak saat membuat website?",
+                     *             "answer": "Pahami kebutuhan Anda terlebih dahulu, gunakan AI sebagai alat bantu, lalu uji website dari sudut pandang pengguna sebelum diluncurkan."
+                     *           }
+                     *         ],
                      *         "seo": {
                      *           "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semuda",
                      *           "description": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum",
