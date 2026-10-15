@@ -8,6 +8,7 @@ export function SectionHead({
   className,
   as: As = "h2",
   id,
+  introClassName,
 }: {
   eyebrow?: string;
   title: React.ReactNode;
@@ -15,6 +16,7 @@ export function SectionHead({
   className?: string;
   as?: "h1" | "h2";
   id?: string;
+  introClassName?: string;
 }) {
   return (
     <div className={cn("flex max-w-[720px] flex-col gap-4", className)}>
@@ -22,7 +24,7 @@ export function SectionHead({
       <As id={id} className="text-heading text-ink">
         {title}
       </As>
-      {intro ? <p className="max-w-[640px] text-body text-ink-muted">{intro}</p> : null}
+      {intro ? <p className={cn("max-w-[640px] text-body text-ink-muted", introClassName)}>{intro}</p> : null}
     </div>
   );
 }

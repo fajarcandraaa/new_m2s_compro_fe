@@ -91,7 +91,11 @@ export function Header({ theme = "dark" }: { theme?: "dark" | "light" }) {
           </ul>
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden items-center gap-4 lg:flex">
+          {/* Placeholder keeps the Figma layout; the ID/EN toggle ships with i18n later. */}
+          <span aria-hidden="true" className="invisible text-small">
+            ID / EN
+          </span>
           <Button href="/diskusi">Diskusi Kebutuhan Sistem</Button>
         </div>
 
