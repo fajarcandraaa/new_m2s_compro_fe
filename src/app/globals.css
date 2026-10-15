@@ -168,22 +168,28 @@
 .prose-m2s {
   color: var(--ink);
   font-size: 16px;
-  line-height: 28px;
+  line-height: 26px;
 }
 .prose-m2s > * + * {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 .prose-m2s h2 {
-  font-size: 28px;
-  line-height: 36px;
+  font-size: 20px;
+  line-height: 28px;
   font-weight: 600;
-  margin-top: 48px;
+  margin-top: 32px;
+}
+@media (width >= 64rem) {
+  .prose-m2s h2 {
+    font-size: 24px;
+    line-height: 32px;
+  }
 }
 .prose-m2s h3 {
   font-size: 20px;
   line-height: 28px;
   font-weight: 600;
-  margin-top: 36px;
+  margin-top: 28px;
 }
 .prose-m2s h4 {
   font-size: 16px;
@@ -219,9 +225,17 @@
   color: var(--cyan-ink);
 }
 .prose-m2s blockquote {
-  border-left: 2px solid var(--cyan);
-  padding-left: 20px;
-  color: var(--ink-muted);
+  border: 2px solid var(--cyan);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  padding: 24px;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.prose-m2s blockquote p {
+  margin: 0;
 }
 .prose-m2s img {
   border-radius: var(--radius-lg);
