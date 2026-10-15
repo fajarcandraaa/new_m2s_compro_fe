@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyCard } from "@/components/site/CaseStudyCard";
 import { DiscussPanel } from "@/components/site/DiscussPanel";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Tag";
 import { getCaseStudies, getCaseStudy, getSite } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, caseStudyJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const cs = await getCaseStudy(slug);
   if (!cs) return { title: "Studi kasus tidak ditemukan" };
-  return pageMetadata({ title: cs.title, description: cs.summary, path: `/studi-kasus/${cs.slug}`, seo: cs.seo });
+  return pageMetadata({ title: cs.title, description: cs.summary, path: `/studi-kasus/${cs.slug}`, seo: cs.seo, ogImageFile: true });
 }
 
 function Block({ id, eyebrow, title, children }: { id: string; eyebrow: string; title: string; children: React.ReactNode }) {
@@ -153,6 +154,8 @@ export default async function StudiKasusDetailPage({ params }: Props) {
           </section>
         ) : null}
       </div>
+      <JsonLd data={caseStudyJsonLd(cs)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Studi Kasus", path: "/studi-kasus" }, { name: cs.title, path: `/studi-kasus/${cs.slug}` }])} />
     </>
   );
 }

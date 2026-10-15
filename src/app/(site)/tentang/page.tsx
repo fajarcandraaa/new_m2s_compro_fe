@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHead } from "@/components/site/SectionHead";
@@ -6,7 +7,7 @@ import { Step } from "@/components/site/Step";
 import { Button } from "@/components/ui/Button";
 import { Card, InfoCard } from "@/components/ui/Card";
 import { getSite } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -113,6 +114,7 @@ export default async function TentangPage() {
           </div>
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Tentang", path: "/tentang" }])} />
     </>
   );
 }

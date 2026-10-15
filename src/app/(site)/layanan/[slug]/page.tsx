@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CaseStudyCard } from "@/components/site/CaseStudyCard";
 import { DiscussPanel } from "@/components/site/DiscussPanel";
+import { Faq } from "@/components/site/Faq";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PackageCard } from "@/components/site/PackageCard";
 import { PageHero } from "@/components/site/PageHero";
 import { Chip } from "@/components/ui/Tag";
 import { getCaseStudies, getService, getServices, getSite } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const s = await getService(slug);
   if (!s) return { title: "Layanan tidak ditemukan" };
-  return pageMetadata({ title: s.title, description: s.summary || s.tagline, path: `/layanan/${s.slug}`, seo: s.seo });
+  return pageMetadata({ title: s.title, description: s.summary || s.tagline, path: `/layanan/${s.slug}`, seo: s.seo, ogImageFile: true });
 }
 
 export default async function LayananDetailPage({ params }: Props) {
@@ -109,12 +111,17 @@ export default async function LayananDetailPage({ params }: Props) {
                 </div>
               </section>
             ) : null}
+
+            <Faq items={service.faqs} />
           </div>
           <div className="lg:w-[380px] lg:shrink-0 lg:self-stretch">
             <DiscussPanel diskusiHref={`/diskusi?layanan=${service.slug}`} whatsappHref={siteWhatsappUrl(site)} />
           </div>
         </div>
       </div>
+      <JsonLd data={serviceJsonLd(service)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Layanan", path: "/layanan" }, { name: service.title, path: `/layanan/${service.slug}` }])} />
+      <JsonLd data={faqJsonLd(service.faqs)} />
     </>
   );
 }

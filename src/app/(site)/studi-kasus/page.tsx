@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { CaseStudyFilter } from "@/components/site/CaseStudyFilter";
 import { CtaStrip } from "@/components/site/CtaStrip";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { getCaseStudies } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -30,6 +31,7 @@ export default async function StudiKasusPage() {
           <CtaStrip title="Punya situasi yang mirip?" body="Ceritakan kondisinya. Kami petakan akar masalahnya sebelum bicara solusi." />
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Studi Kasus", path: "/studi-kasus" }])} />
     </>
   );
 }

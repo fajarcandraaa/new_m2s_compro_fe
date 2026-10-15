@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { ArticleCover } from "@/components/site/ArticleCover";
+import { Faq } from "@/components/site/Faq";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { ShareLinks } from "@/components/site/ShareLinks";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Tag";
 import { getArticle, getArticles, getRelatedArticles } from "@/lib/api/public";
 import { formatDate } from "@/lib/format";
-import { pageMetadata } from "@/lib/seo";
+import { blogPostingJsonLd, breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 300;
@@ -30,6 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `/artikel/${a.slug}`,
     seo: a.seo,
     image: a.coverImageUrl,
+    ogImageFile: true,
     type: "article",
     publishedTime: a.publishedAt,
   });
@@ -42,16 +45,6 @@ export default async function ArtikelDetailPage({ params }: Props) {
 
   const url = `${SITE_URL}/artikel/${article.slug}`;
   const isSystems = article.tags.some((t) => t.slug === "sistem-internal");
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    datePublished: article.publishedAt,
-    author: { "@type": "Organization", name: article.author || "Mind2Screen" },
-    image: new URL(article.coverImageUrl ?? "/brand/og-default.png", SITE_URL).toString(),
-    mainEntityOfPage: url,
-  };
 
   return (
     <>
@@ -67,9 +60,10 @@ export default async function ArtikelDetailPage({ params }: Props) {
       />
       <article className="container-site py-12 lg:py-16">
         <div className="mx-auto flex max-w-[720px] flex-col gap-8">
-          <ArticleCover src={article.coverImageUrl} alt="" priority sizes="(min-width: 768px) 720px, 100vw" />
+          <ArticleCover src={article.coverImageUrl} alt={article.title} priority sizes="(min-width: 768px) 720px, 100vw" />
           {/* contentHtml is sanitised by the BE (bluemonday UGC policy) before it is stored. */}
           <div className="prose-m2s" dangerouslySetInnerHTML={{ __html: article.contentHtml }} />
+          <Faq items={article.faqs} className="mt-4" />
           {article.tags.length > 0 ? (
             <ul className="flex flex-wrap gap-2" aria-label="Tag">
               {article.tags.map((t) => (
@@ -117,7 +111,9 @@ export default async function ArtikelDetailPage({ params }: Props) {
           </ul>
         </section>
       ) : null}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd data={blogPostingJsonLd(article)} />
+      <JsonLd data={breadcrumbJsonLd([{ name: "Artikel", path: "/artikel" }, { name: article.title, path: `/artikel/${article.slug}` }])} />
+      <JsonLd data={faqJsonLd(article.faqs)} />
     </>
   );
 }
