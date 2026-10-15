@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useConfirm } from "@/components/admin/Dialog";
+import { FaqPanel, faqsSchema, faqsToBody, faqsToForm } from "@/components/admin/FaqPanel";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { ErrorBox, Loading, PageHeader, Panel } from "@/components/admin/Page";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
@@ -34,6 +35,7 @@ const schema = z.object({
   tags: z.array(z.string()).max(10, "Maksimal 10 tag."),
   coverImageUrl: z.string().nullable(),
   author: z.string().max(120),
+  faqs: faqsSchema,
   seo: z.object({
     title: z.string().max(70, "Maksimal 70 karakter."),
     description: z.string().max(160, "Maksimal 160 karakter."),
@@ -51,6 +53,7 @@ const EMPTY: V = {
   tags: [],
   coverImageUrl: null,
   author: "",
+  faqs: [],
   seo: { title: "", description: "", ogImageUrl: null },
 };
 
@@ -64,6 +67,7 @@ function toForm(a: ArticleAdmin): V {
     tags: a.tags.map((t) => t.name),
     coverImageUrl: a.coverImageUrl,
     author: a.author,
+    faqs: faqsToForm(a.faqs),
     seo: { title: a.seo.title ?? "", description: a.seo.description ?? "", ogImageUrl: a.seo.ogImageUrl ?? null },
   };
 }
@@ -113,6 +117,7 @@ export default function ArticleEditorPage() {
         tags: v.tags,
         coverImageUrl: v.coverImageUrl,
         author: v.author,
+        faqs: faqsToBody(v.faqs),
         seo: { title: v.seo.title || null, description: v.seo.description || null, ogImageUrl: v.seo.ogImageUrl || null },
         // Create: omit an untouched slug so the BE generates one (with -2, -3 on collision, never 409).
         ...(isNew && !slugTouched ? {} : v.slug ? { slug: v.slug } : {}),
@@ -177,21 +182,24 @@ export default function ArticleEditorPage() {
       />
       {formError ? <ErrorBox message={formError} /> : null}
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_340px]">
-        <Panel>
-          <Input label="Judul" error={e.title?.message} {...register("title")} />
-          <Input
-            label="Slug (URL)"
-            hint={`/artikel/${slug || "…"}${isNew && !slugTouched ? " · dibuat otomatis dari judul" : ""}`}
-            error={e.slug?.message}
-            {...register("slug", { onChange: () => setSlugTouched(true) })}
-          />
-          <Textarea label="Ringkasan" rows={3} placeholder="Muncul di kartu artikel dan hasil pencarian." error={e.excerpt?.message} {...register("excerpt")} />
-          <Controller
-            control={control}
-            name="contentHtml"
-            render={({ field, fieldState }) => <RichTextEditor value={field.value} onChange={field.onChange} error={fieldState.error?.message} />}
-          />
-        </Panel>
+        <div className="flex flex-col gap-6">
+          <Panel>
+            <Input label="Judul" error={e.title?.message} {...register("title")} />
+            <Input
+              label="Slug (URL)"
+              hint={`/artikel/${slug || "…"}${isNew && !slugTouched ? " · dibuat otomatis dari judul" : ""}`}
+              error={e.slug?.message}
+              {...register("slug", { onChange: () => setSlugTouched(true) })}
+            />
+            <Textarea label="Ringkasan" rows={3} placeholder="Muncul di kartu artikel dan hasil pencarian." error={e.excerpt?.message} {...register("excerpt")} />
+            <Controller
+              control={control}
+              name="contentHtml"
+              render={({ field, fieldState }) => <RichTextEditor value={field.value} onChange={field.onChange} error={fieldState.error?.message} />}
+            />
+          </Panel>
+          <FaqPanel control={control} register={register} errors={e} />
+        </div>
         <div className="flex flex-col gap-6">
           <Panel title="Publikasi">
             <div className="flex items-center justify-between">

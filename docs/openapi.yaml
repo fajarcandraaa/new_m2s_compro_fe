@@ -5989,6 +5989,22 @@ components:
         highlighted:
           type: boolean
           description: Visually emphasised package. At most one package per service may be highlighted (else 422 on `packages`).
+    FaqItem:
+      type: object
+      description: One FAQ entry (plain text).
+      additionalProperties: false
+      required:
+      - question
+      - answer
+      properties:
+        question:
+          type: string
+          minLength: 1
+          maxLength: 200
+        answer:
+          type: string
+          minLength: 1
+          maxLength: 1000
     Service:
       type: object
       description: Public service (list and detail share this shape).
@@ -6009,6 +6025,7 @@ components:
       - systems
       - packages
       - seo
+      - faqs
       properties:
         slug:
           type: string
@@ -6071,6 +6088,12 @@ components:
             $ref: '#/components/schemas/ServicePackage'
           maxItems: 8
           description: Pricing packages (used by web-development); empty otherwise.
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
     ServiceAdmin:
@@ -6096,6 +6119,7 @@ components:
       - status
       - createdAt
       - updatedAt
+      - faqs
       properties:
         id:
           type: string
@@ -6161,6 +6185,12 @@ components:
             $ref: '#/components/schemas/ServicePackage'
           maxItems: 8
           description: Pricing packages (used by web-development); empty otherwise.
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
         status:
@@ -6257,6 +6287,12 @@ components:
             $ref: '#/components/schemas/ServicePackageInput'
           maxItems: 8
           description: Replaces all packages of the service. Array order = display order.
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
         status:
@@ -6863,6 +6899,7 @@ components:
       - author
       - contentHtml
       - seo
+      - faqs
       properties:
         slug:
           type: string
@@ -6907,6 +6944,12 @@ components:
           type: string
           maxLength: 200000
           description: Sanitised HTML (bluemonday UGC).
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
     ArticleAdminSummary:
@@ -6975,6 +7018,7 @@ components:
       - isScheduled
       - createdAt
       - updatedAt
+      - faqs
       properties:
         id:
           type: string
@@ -7023,6 +7067,12 @@ components:
         contentHtml:
           type: string
           maxLength: 200000
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
         status:
@@ -7104,6 +7154,12 @@ components:
           type: string
           maxLength: 120
           description: Defaults to `Tim Mind2Screen` when empty.
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItem'
+          maxItems: 10
+          description: Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none.
         seo:
           $ref: '#/components/schemas/Seo'
     PromoStatus:

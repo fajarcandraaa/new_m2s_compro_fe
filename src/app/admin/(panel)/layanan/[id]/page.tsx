@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useConfirm } from "@/components/admin/Dialog";
+import { FaqPanel, faqsSchema, faqsToBody, faqsToForm } from "@/components/admin/FaqPanel";
 import { ErrorBox, Loading, PageHeader, Panel, TextLink } from "@/components/admin/Page";
 import { SeoPanel } from "@/components/admin/SeoPanel";
 import { useToast } from "@/components/admin/Toast";
@@ -47,6 +48,7 @@ const schema = z.object({
     .array(pkg)
     .max(8)
     .refine((ps) => ps.filter((p) => p.highlighted).length <= 1, "Hanya satu paket yang boleh ditonjolkan."),
+  faqs: faqsSchema,
   seo: z.object({ title: z.string().max(70), description: z.string().max(160), ogImageUrl: z.string().nullable() }),
 });
 type V = z.infer<typeof schema>;
@@ -65,6 +67,7 @@ const EMPTY: V = {
   deliverables: [],
   systems: "",
   packages: [],
+  faqs: [],
   seo: { title: "", description: "", ogImageUrl: null },
 };
 
@@ -90,6 +93,7 @@ function toForm(s: ServiceAdmin): V {
       features: arrayToLines(p.features),
       highlighted: p.highlighted,
     })),
+    faqs: faqsToForm(s.faqs),
     seo: { title: s.seo.title ?? "", description: s.seo.description ?? "", ogImageUrl: s.seo.ogImageUrl ?? null },
   };
 }
@@ -138,6 +142,7 @@ export default function ServiceEditorPage() {
         deliverables: v.deliverables,
         systems: linesToArray(v.systems),
         packages: v.packages.map((p) => ({ ...p, features: linesToArray(p.features) })),
+        faqs: faqsToBody(v.faqs),
         seo: { title: v.seo.title || null, description: v.seo.description || null, ogImageUrl: v.seo.ogImageUrl || null },
         status,
         ...(isNew && !slugTouched ? {} : v.slug ? { slug: v.slug } : {}),
@@ -288,6 +293,8 @@ export default function ServiceEditorPage() {
             ))}
             {e.packages?.message || e.packages?.root?.message ? <ErrorBox message={(e.packages?.message ?? e.packages?.root?.message)!} /> : null}
           </Panel>
+
+          <FaqPanel control={control} register={register} errors={e} />
         </div>
         <div className="flex flex-col gap-6">
           <Panel title="Publikasi">

@@ -1203,6 +1203,11 @@ export interface components {
             /** @description Visually emphasised package. At most one package per service may be highlighted (else 422 on `packages`). */
             highlighted: boolean;
         };
+        /** @description One FAQ entry (plain text). */
+        FaqItem: {
+            question: string;
+            answer: string;
+        };
         /** @description Public service (list and detail share this shape). */
         Service: {
             /** @description URL slug: lowercase letters, digits and single hyphens. */
@@ -1224,6 +1229,8 @@ export interface components {
             systems: string[];
             /** @description Pricing packages (used by web-development); empty otherwise. */
             packages: components["schemas"]["ServicePackage"][];
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
         ServiceAdmin: {
@@ -1248,6 +1255,8 @@ export interface components {
             systems: string[];
             /** @description Pricing packages (used by web-development); empty otherwise. */
             packages: components["schemas"]["ServicePackage"][];
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
             /**
@@ -1281,6 +1290,8 @@ export interface components {
             systems: string[];
             /** @description Replaces all packages of the service. Array order = display order. */
             packages: components["schemas"]["ServicePackageInput"][];
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs?: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
         };
@@ -1482,6 +1493,8 @@ export interface components {
             author: string;
             /** @description Sanitised HTML (bluemonday UGC). */
             contentHtml: string;
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
         /** @description Row in the CMS article table. */
@@ -1529,6 +1542,8 @@ export interface components {
              */
             publishedAt: string | null;
             contentHtml: string;
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
             status: components["schemas"]["ContentStatus"];
             /** @description Computed: status=published and publishedAt > now. */
@@ -1567,6 +1582,8 @@ export interface components {
             coverImageUrl: string | null;
             /** @description Defaults to `Tim Mind2Screen` when empty. */
             author?: string;
+            /** @description Frequently asked questions (rendered as FAQ section and FAQPage JSON-LD). `[]` when none. */
+            faqs?: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
         };
         /**
