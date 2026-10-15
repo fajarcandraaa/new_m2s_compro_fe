@@ -7,9 +7,14 @@ export const revalidate = 300;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [services, caseStudies, articles] = await Promise.all([getServices(), getCaseStudies(), getArticles(1, 100)]);
   const now = new Date();
+  // Public service/case-study payloads carry no timestamps; articles use publishedAt (no public updatedAt).
+  const latestArticle = articles.data.reduce<Date | undefined>((max, a) => {
+    const d = new Date(a.publishedAt);
+    return !max || d > max ? d : max;
+  }, undefined);
   const statics = ["", "/layanan", "/cara-kerja", "/studi-kasus", "/artikel", "/tentang", "/promo", "/diskusi"].map((p) => ({
     url: `${SITE_URL}${p}`,
-    lastModified: now,
+    lastModified: p === "/artikel" && latestArticle ? latestArticle : now,
     changeFrequency: "weekly" as const,
     priority: p === "" ? 1 : 0.8,
   }));
