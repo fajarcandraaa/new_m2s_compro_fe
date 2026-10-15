@@ -125,7 +125,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <a href="#cms-main" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-cyan focus:px-4 focus:py-2">
           Lewati ke konten
         </a>
-        <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">{sidebar}</aside>
+        <aside className="hidden w-[240px] shrink-0 border-r border-line bg-surface lg:block">
+          <div className="sticky top-0 h-screen overflow-y-auto">{sidebar}</div>
+        </aside>
         <div className="flex items-center justify-between border-b border-line bg-surface px-4 py-3 lg:hidden">
           <span className="text-[14px] font-semibold">Mind2Screen CMS</span>
           <button type="button" aria-expanded={navOpen} aria-controls="cms-nav" onClick={() => setNavOpen((v) => !v)} className="text-[14px] font-medium">

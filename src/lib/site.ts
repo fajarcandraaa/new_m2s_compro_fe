@@ -27,7 +27,8 @@ export function siteWhatsappUrl(site: Pick<Site, "whatsappNumber" | "whatsappGre
   return whatsappUrl(site.whatsappNumber, site.whatsappGreeting);
 }
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+/** Public origin. Server code prefers runtime SITE_URL (BE compose passes it), else the build-time NEXT_PUBLIC_SITE_URL. */
+export const SITE_URL = (process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
 export const NAV = [
   { href: "/layanan", label: "Layanan" },
