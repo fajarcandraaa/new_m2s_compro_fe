@@ -52,14 +52,36 @@ type SetError = (name: never, error: { type: string; message: string }, options?
  * The contract guarantees the keys equal RHF paths. Returns true when at least one field was set.
  * `rename` lets a form map an API path onto a differently named form field.
  */
-export function applyFieldErrors(err: unknown, setError: SetError, rename: Record<string, string> = {}): boolean {
+export function applyFieldErrors(
+  err: unknown,
+  setError: SetError,
+  rename: Record<string, string> | ((path: string) => string) = {},
+): boolean {
   if (!(err instanceof ApiRequestError)) return false;
   const entries = Object.entries(err.fields);
-  entries.forEach(([path, message], i) => {
-    const name = (rename[path] ?? path) as never;
-    setError(name, { type: "server", message }, { shouldFocus: i === 0 });
+  const seen = new Set<string>();
+  entries.forEach(([path, message]) => {
+    const name = typeof rename === "function" ? rename(path) : (rename[path] ?? path);
+    if (seen.has(name)) return;
+    setError(name as never, { type: "server", message }, { shouldFocus: seen.size === 0 });
+    seen.add(name);
   });
   return entries.length > 0;
+}
+
+/**
+ * For forms that edit string arrays as "one item per line" textareas: map
+ * `points.2` / `packages.0.features.1` onto the textarea field (`points`, `packages.0.features`).
+ */
+export function collapseIndexedPath(arrayFields: string[]) {
+  return (path: string) => {
+    for (const f of arrayFields) {
+      const re = new RegExp(`^(${f.replace(/\./g, "\\.").replace(/\*/g, "\\d+")})\\.\\d+$`);
+      const m = path.match(re);
+      if (m) return m[1]!;
+    }
+    return path;
+  };
 }
 
 export function errorMessage(err: unknown): string {
