@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { DiskusiForm, DiskusiFormWithParams } from "@/components/site/DiskusiForm";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Step } from "@/components/site/Step";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { getServices, getSite } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
@@ -77,6 +78,7 @@ export default async function DiskusiPage() {
           ))}
         </ol>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Diskusi", path: "/diskusi" }])} />
     </>
   );
 }

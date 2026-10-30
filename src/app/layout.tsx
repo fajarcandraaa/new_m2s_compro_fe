@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { poppins } from "@/lib/fonts";
-import { DEFAULT_DESCRIPTION, DEFAULT_OG } from "@/lib/seo";
+import { DEFAULT_DESCRIPTION } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   title: { default: "Mind2Screen | Partner Sistem Internal B2B", template: "%s | Mind2Screen" },
   description: DEFAULT_DESCRIPTION,
   applicationName: "Mind2Screen",
-  openGraph: { siteName: "Mind2Screen", locale: "id_ID", type: "website", images: [{ url: DEFAULT_OG, width: 1200, height: 630 }] },
+  // og:image comes from app/opengraph-image.tsx (file convention); pages set their own via pageMetadata.
+  openGraph: { siteName: "Mind2Screen", locale: "id_ID", type: "website" },
 };
 
 export const viewport: Viewport = {

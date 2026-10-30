@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHead } from "@/components/site/SectionHead";
 import { Step } from "@/components/site/Step";
 import { Button } from "@/components/ui/Button";
 import { InfoCard } from "@/components/ui/Card";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
   title: "Proses Kerja Kami",
@@ -146,6 +147,7 @@ export default function CaraKerjaPage() {
           </div>
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Cara Kerja", path: "/cara-kerja" }])} />
     </>
   );
 }

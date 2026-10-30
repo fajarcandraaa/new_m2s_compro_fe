@@ -5,6 +5,8 @@ const backendUrl = (process.env.BACKEND_URL ?? "http://localhost:8080").replace(
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  // Brand fonts read by the generated OG images (src/lib/og.tsx) must ship with the standalone server.
+  outputFileTracingIncludes: { "/**/opengraph-image*": ["./src/assets/fonts/*.ttf"] },
   images: {
     // Uploaded media is served same-origin through the /uploads rewrite.
     localPatterns: [{ pathname: "/uploads/**" }, { pathname: "/brand/**" }],

@@ -1,7 +1,8 @@
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { JsonLd } from "@/components/site/JsonLd";
 import { getSite } from "@/lib/api/public";
-import { organizationJsonLd } from "@/lib/seo";
+import { siteJsonLd } from "@/lib/seo";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
@@ -16,11 +17,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header />
       <main id="konten">{children}</main>
       <Footer site={site} />
-      <script
-        type="application/ld+json"
-        // JSON-LD from trusted settings; `<` escaped to keep the script block safe.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(site)).replace(/</g, "\\u003c") }}
-      />
+      <JsonLd data={siteJsonLd(site)} />
     </>
   );
 }

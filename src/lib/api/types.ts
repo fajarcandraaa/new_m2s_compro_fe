@@ -20,6 +20,7 @@ export type PromoStatus = S["PromoStatus"];
 export type Testimonial = S["Testimonial"];
 export type ClientLogo = S["ClientLogo"];
 export type Seo = S["Seo"];
+export type FaqItem = S["FaqItem"];
 export type PageMeta = S["PageMeta"];
 export type ApiError = S["Error"];
 export type ErrorCode = S["Error"]["error"]["code"];

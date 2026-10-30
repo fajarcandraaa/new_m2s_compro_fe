@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { PromoList } from "@/components/site/PromoList";
 import { Reveal } from "@/components/site/Reveal";
 import { getPromos } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -23,6 +24,7 @@ export default async function PromoPage() {
           <PromoList promos={promos} />
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Promo", path: "/promo" }])} />
     </>
   );
 }

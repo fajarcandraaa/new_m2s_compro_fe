@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PackageCard } from "@/components/site/PackageCard";
+import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { PromoCard } from "@/components/site/PromoCard";
 import { Reveal } from "@/components/site/Reveal";
@@ -10,7 +11,7 @@ import { WorkModelTable } from "@/components/site/WorkModelTable";
 import { ModelPanels } from "@/components/site/process";
 import { Button } from "@/components/ui/Button";
 import { getPromos, getServices } from "@/lib/api/public";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -115,6 +116,7 @@ export default async function LayananPage() {
           </div>
         </Reveal>
       </section>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Layanan", path: "/layanan" }])} />
     </>
   );
 }
