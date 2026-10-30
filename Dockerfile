@@ -5,6 +5,7 @@
 #   BACKEND_URL           Internal BE origin, e.g. http://be:8080. Used for the /api and /uploads
 #                         rewrites (resolved at build) AND as the runtime default for server fetches.
 #   NEXT_PUBLIC_SITE_URL  Public origin, e.g. https://mindtoscreen.com (canonical URLs, sitemap, OG).
+#   NEXT_PUBLIC_GA_ID     GA4 Measurement ID (G-XXXX); empty disables analytics + its privacy line.
 # Runtime env:
 #   BACKEND_URL (optional override for server fetches), REVALIDATE_SECRET (required for /api/revalidate).
 
@@ -18,8 +19,10 @@ FROM node:22.23.4-alpine AS builder
 WORKDIR /app
 ARG BACKEND_URL=http://be:8080
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ARG NEXT_PUBLIC_GA_ID=
 ENV BACKEND_URL=$BACKEND_URL \
     NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
