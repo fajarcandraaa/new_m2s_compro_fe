@@ -105,9 +105,14 @@ export function Footer({ site }: { site: Site }) {
           </div>
         </div>
         <div className="flex flex-col gap-2 text-small text-ink-muted lg:flex-row lg:justify-between lg:border-t lg:border-line lg:pt-6">
-          <p>
-            © {year} {site.legalName}
-          </p>
+          <div className="flex flex-col gap-1">
+            <p>
+              © {year} {site.legalName}
+            </p>
+            {process.env.NEXT_PUBLIC_GA_ID ? (
+              <p>Situs ini memakai Google Analytics untuk statistik kunjungan.</p>
+            ) : null}
+          </div>
           <p className="hidden text-tagline lg:block">{site.tagline}</p>
         </div>
       </div>

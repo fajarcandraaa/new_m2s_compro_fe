@@ -1,3 +1,4 @@
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Button } from "@/components/ui/Button";
 
 /** Sticky "Panel diskusi" (Figma Detail Layanan / Detail Studi Kasus). */
@@ -22,9 +23,9 @@ export function DiscussPanel({
       <Button href={diskusiHref} className="w-full">
         Diskusi Kebutuhan Sistem
       </Button>
-      <Button href={whatsappHref} variant="secondary" className="w-full">
+      <WhatsAppButton href={whatsappHref} source="discuss-panel" className="w-full">
         Chat via WhatsApp
-      </Button>
+      </WhatsAppButton>
     </aside>
   );
 }

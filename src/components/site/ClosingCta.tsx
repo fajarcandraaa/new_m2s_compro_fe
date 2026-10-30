@@ -1,5 +1,6 @@
 import { BrandScreen } from "@/components/brand/BrandScreen";
 import { DotField } from "@/components/brand/DotField";
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Reveal } from "@/components/site/Reveal";
 import { Button } from "@/components/ui/Button";
 
@@ -31,9 +32,9 @@ export function ClosingCta({
           <p className="max-w-[560px] text-body text-ink-muted">{body}</p>
           <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
             <Button href="/diskusi">Diskusi Kebutuhan Sistem</Button>
-            <Button href={whatsappHref} variant="secondary">
+            <WhatsAppButton href={whatsappHref} source="closing-cta">
               Chat via WhatsApp
-            </Button>
+            </WhatsAppButton>
           </div>
         </Reveal>
       </div>

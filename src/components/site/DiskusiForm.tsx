@@ -1,5 +1,6 @@
 "use client";
 
+import { sendGAEvent } from "@next/third-parties/google";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
@@ -7,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/Button";
 import { Input, Select, Textarea } from "@/components/ui/Field";
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { api, applyFieldErrors, errorMessage, unwrap } from "@/lib/api/browser";
 import type { LeadCreateInput } from "@/lib/api/types";
 
@@ -80,6 +82,7 @@ export function DiskusiForm({
     try {
       // Posted from the browser through the same-origin /api rewrite (rate limit keys on client IP).
       await unwrap(api.POST("/leads", { body }));
+      sendGAEvent("event", "generate_lead", { form: "diskusi", service: v.service || "none" });
       setSent(true);
       requestAnimationFrame(() => successRef.current?.focus());
     } catch (err) {
@@ -103,9 +106,9 @@ export function DiskusiForm({
           Kami.
         </p>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-4">
-          <Button href={whatsappHref} variant="secondary">
+          <WhatsAppButton href={whatsappHref} source="diskusi-success">
             Chat via WhatsApp
-          </Button>
+          </WhatsAppButton>
           <Button href="/studi-kasus" variant="secondary">
             Lihat Studi Kasus
           </Button>

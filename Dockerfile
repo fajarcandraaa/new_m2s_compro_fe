@@ -8,13 +8,13 @@
 # Runtime env:
 #   BACKEND_URL (optional override for server fetches), REVALIDATE_SECRET (required for /api/revalidate).
 
-FROM node:22-alpine AS deps
+FROM node:22.23.4-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:22-alpine AS builder
+FROM node:22.23.4-alpine AS builder
 WORKDIR /app
 ARG BACKEND_URL=http://be:8080
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -27,7 +27,7 @@ COPY . .
 # that regenerate at runtime (ISR, revalidate 300 s or on-demand revalidation).
 RUN npm run build
 
-FROM node:22-alpine AS runner
+FROM node:22.23.4-alpine AS runner
 WORKDIR /app
 ARG BACKEND_URL=http://be:8080
 ENV NODE_ENV=production \

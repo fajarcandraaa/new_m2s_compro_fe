@@ -4,6 +4,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHead } from "@/components/site/SectionHead";
 import { Step } from "@/components/site/Step";
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Button } from "@/components/ui/Button";
 import { Card, InfoCard } from "@/components/ui/Card";
 import { getSite } from "@/lib/api/public";
@@ -107,9 +108,9 @@ export default async function TentangPage() {
             <h2 className="text-title text-ink">Ceritakan sistem yang ingin Anda bangun</h2>
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
               <Button href="/diskusi">Diskusi Kebutuhan Sistem</Button>
-              <Button href={siteWhatsappUrl(site)} variant="secondary">
+              <WhatsAppButton href={siteWhatsappUrl(site)} source="tentang">
                 Chat via WhatsApp
-              </Button>
+              </WhatsAppButton>
             </div>
           </div>
         </Reveal>
