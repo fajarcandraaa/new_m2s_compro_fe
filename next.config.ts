@@ -26,6 +26,13 @@ const nextConfig: NextConfig = {
       { source: "/admin/:path*", headers: [{ key: "X-Frame-Options", value: "DENY" }] },
     ];
   },
+  async redirects() {
+    return [
+      // Legacy "/articles/:slug" URLs (pre-rename) permanently redirect to "/artikel/:slug".
+      // 308 preserves the HTTP method and query string; :slug is path-only so /articles/{slug}/related stays unaffected.
+      { source: "/articles/:slug", destination: "/artikel/:slug", permanent: true },
+    ];
+  },
   async rewrites() {
     return [
       // Route handlers under app/api (e.g. /api/revalidate) win over this afterFiles rewrite.
