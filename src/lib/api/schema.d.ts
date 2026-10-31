@@ -1232,6 +1232,11 @@ export interface components {
             /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
+            /**
+             * Format: date-time
+             * @description RFC3339, UTC.
+             */
+            updatedAt: string;
         };
         ServiceAdmin: {
             /** Format: uuid */
@@ -1317,6 +1322,11 @@ export interface components {
             /** @description Exactly two impact numbers. */
             metrics: components["schemas"]["CaseStudyMetric"][];
             scope: string[];
+            /**
+             * Format: date-time
+             * @description RFC3339, UTC.
+             */
+            updatedAt: string;
         };
         /** @description Public case-study detail. */
         CaseStudy: {
@@ -1352,6 +1362,11 @@ export interface components {
             /** @description Pelajaran. */
             lesson: string;
             seo: components["schemas"]["Seo"];
+            /**
+             * Format: date-time
+             * @description RFC3339, UTC.
+             */
+            updatedAt: string;
         };
         CaseStudyAdmin: {
             /** Format: uuid */
@@ -1470,6 +1485,11 @@ export interface components {
             /** @description Computed by BE on save (~200 words/minute). */
             readMinutes: number;
             author: string;
+            /**
+             * Format: date-time
+             * @description RFC3339, UTC.
+             */
+            updatedAt: string;
         };
         Article: {
             /** @description URL slug: lowercase letters, digits and single hyphens. */
@@ -1496,6 +1516,11 @@ export interface components {
             /** @description FAQ items in editor order (rendered by the FE as FAQPage JSON-LD). Always present; `[]` when none. */
             faqs: components["schemas"]["FaqItem"][];
             seo: components["schemas"]["Seo"];
+            /**
+             * Format: date-time
+             * @description RFC3339, UTC.
+             */
+            updatedAt: string;
         };
         /** @description Row in the CMS article table. */
         ArticleAdminSummary: {
@@ -2199,6 +2224,7 @@ export interface operations {
                      *       "data": [
                      *         {
                      *           "slug": "custom-software-development",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "audience": "business",
                      *           "sortOrder": 1,
                      *           "eyebrow": "Utama",
@@ -2271,6 +2297,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "ui-ux-design",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "audience": "business",
                      *           "sortOrder": 2,
                      *           "eyebrow": "Desain",
@@ -2336,6 +2363,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "data-analysis-processing",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "audience": "business",
                      *           "sortOrder": 3,
                      *           "eyebrow": "Data",
@@ -2405,6 +2433,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "it-consultant",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "audience": "business",
                      *           "sortOrder": 4,
                      *           "eyebrow": "Konsultasi",
@@ -2470,6 +2499,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "web-development",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "audience": "personal",
                      *           "sortOrder": 5,
                      *           "eyebrow": "Untuk usaha & personal",
@@ -2623,6 +2653,7 @@ export interface operations {
                     /**
                      * @example {
                      *       "data": {
+                     *         "updatedAt": "2026-10-15T03:30:00Z",
                      *         "slug": "web-development",
                      *         "audience": "personal",
                      *         "sortOrder": 5,
@@ -2774,6 +2805,7 @@ export interface operations {
                      *       "data": [
                      *         {
                      *           "slug": "tumbuh-sistem-pertumbuhan-sdm",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "systemName": "TUMBUH",
                      *           "category": "HRIS",
                      *           "featured": true,
@@ -2800,6 +2832,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "rapi-sistem-penataan-proses-dokumen",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "systemName": "RAPI",
                      *           "category": "DMS",
                      *           "featured": true,
@@ -2860,6 +2893,7 @@ export interface operations {
                     /**
                      * @example {
                      *       "data": {
+                     *         "updatedAt": "2026-10-15T03:30:00Z",
                      *         "slug": "tumbuh-sistem-pertumbuhan-sdm",
                      *         "systemName": "TUMBUH",
                      *         "category": "HRIS",
@@ -2966,6 +3000,7 @@ export interface operations {
                      *       "data": [
                      *         {
                      *           "slug": "ai-bisa-membuat-website-dalam-hitungan-menit-tapi-apakah-benar-semudah-itu",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semudah Itu?",
                      *           "excerpt": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum Anda ikut terburu-buru.",
                      *           "coverImageUrl": null,
@@ -2981,6 +3016,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "data-ktp-bocor-itu-sebenarnya-dampaknya-apa",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "title": "Data KTP Bocor Itu Sebenarnya Dampaknya Apa?",
                      *           "excerpt": "Kebocoran data KTP sering dianggap sepele, padahal dampaknya bisa sangat serius. Dari penipuan hingga pencurian identitas, kenali risiko nyata dan cara melindungi data pribadi Anda.",
                      *           "coverImageUrl": null,
@@ -2996,6 +3032,7 @@ export interface operations {
                      *         },
                      *         {
                      *           "slug": "kenapa-jangan-klik-link-sembarangan-di-whatsapp",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "title": "Kenapa Jangan Klik Link Sembarangan di WhatsApp",
                      *           "excerpt": "Satu klik link mencurigakan di WhatsApp bisa membuka pintu bagi hacker untuk mengakses data pribadi Anda. Pelajari bahaya di balik link palsu dan cara melindungi diri.",
                      *           "coverImageUrl": null,
@@ -3046,6 +3083,7 @@ export interface operations {
                     /**
                      * @example {
                      *       "data": {
+                     *         "updatedAt": "2026-10-15T03:30:00Z",
                      *         "slug": "ai-bisa-membuat-website-dalam-hitungan-menit-tapi-apakah-benar-semudah-itu",
                      *         "title": "AI Bisa Membuat Website dalam Hitungan Menit. Tapi Apakah Benar Semudah Itu?",
                      *         "excerpt": "Banyak iklan mengatakan membuat website dengan AI semudah mengetik satu kalimat. Tapi apakah hasilnya benar-benar siap digunakan? Mari pahami realitanya sebelum Anda ikut terburu-buru.",
@@ -3110,6 +3148,7 @@ export interface operations {
                      *       "data": [
                      *         {
                      *           "slug": "kenapa-jangan-klik-link-sembarangan-di-whatsapp",
+                     *           "updatedAt": "2026-10-15T03:30:00Z",
                      *           "title": "Kenapa Jangan Klik Link Sembarangan di WhatsApp",
                      *           "excerpt": "Satu klik link mencurigakan di WhatsApp bisa membuka pintu bagi hacker untuk mengakses data pribadi Anda. Pelajari bahaya di balik link palsu dan cara melindungi diri.",
                      *           "coverImageUrl": null,
