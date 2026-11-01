@@ -5,7 +5,6 @@ import { CaseStudyCase } from "@/components/site/CaseStudyCase";
 import { DiscussPanel } from "@/components/site/DiscussPanel";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
-import type { CaseStudySummary } from "@/lib/api/types";
 import { getCaseStudies, getCaseStudy, getSite } from "@/lib/api/public";
 import { breadcrumbJsonLd, caseStudyJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
@@ -65,16 +64,6 @@ function NumberedList({ items, icon }: { items: string[]; icon?: "x" | "check" }
   );
 }
 
-function Metric({ metric }: { metric: CaseStudySummary["metrics"][number] }) {
-  return (
-    <div className="flex flex-col gap-2 border-t-[3px] border-cyan pt-4">
-      <p className="text-[56px] leading-[60px] font-semibold text-cyan-ink lg:text-[72px] lg:leading-[76px]">{metric.value}</p>
-      <p className="text-small text-ink">{metric.label}</p>
-      {metric.before ? <p className="text-small text-ink-muted">Sebelumnya: {metric.before}</p> : null}
-    </div>
-  );
-}
-
 export default async function StudiKasusDetailPage({ params }: Props) {
   const { slug } = await params;
   const [cs, site, all] = await Promise.all([getCaseStudy(slug), getSite(), getCaseStudies()]);
@@ -97,19 +86,14 @@ export default async function StudiKasusDetailPage({ params }: Props) {
 
           <div
             data-theme="dark"
-            className="relative flex flex-col justify-between gap-8 bg-[#080808] p-6 lg:p-10"
+            className="relative flex flex-col justify-center gap-8 bg-[#080808] p-6 lg:p-10"
             style={{
               backgroundImage: "radial-gradient(#181818 1.6px, transparent 1.8px)",
               backgroundSize: "32px 32px",
             }}
           >
-            <div className="relative z-[1] grid gap-6 sm:grid-cols-2">
-              {cs.metrics.map((m) => (
-                <Metric key={m.label} metric={m} />
-              ))}
-            </div>
             {cs.scope.length > 0 ? (
-              <div className="relative z-[1] flex flex-col gap-2">
+              <div className="relative z-[1] flex flex-col gap-3">
                 <p className="text-tagline text-ink-muted">Cakupan sistem</p>
                 <ul className="flex flex-wrap gap-2">
                   {cs.scope.map((s) => (
