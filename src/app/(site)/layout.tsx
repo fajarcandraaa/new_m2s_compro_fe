@@ -1,4 +1,5 @@
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { AnalyticsPageView } from "@/components/site/AnalyticsPageView";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -19,7 +20,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main id="konten">{children}</main>
       <Footer site={site} />
       <JsonLd data={siteJsonLd(site)} />
-      {process.env.NEXT_PUBLIC_GA_ID ? <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} /> : null}
+      {process.env.NEXT_PUBLIC_GA_ID ? (
+        <>
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+          <AnalyticsPageView />
+        </>
+      ) : null}
     </>
   );
 }

@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { DotField } from "@/components/brand/DotField";
+import { Anim } from "@/components/site/Anim";
+import { BandCta } from "@/components/site/BandCta";
+import { CrossIcon } from "@/components/site/Icons";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
-import { Reveal } from "@/components/site/Reveal";
 import { SectionHead } from "@/components/site/SectionHead";
-import { Step } from "@/components/site/Step";
-import { Button } from "@/components/ui/Button";
-import { InfoCard } from "@/components/ui/Card";
+import { WhyTabs } from "@/components/site/WhyTabs";
+import { MISCONCEPTIONS, PRINCIPLES } from "@/lib/content/cara-kerja";
+import { STEPS } from "@/lib/content/process";
 import { breadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -14,61 +18,6 @@ export const metadata: Metadata = pageMetadata({
     "Sebagian besar sistem internal tidak gagal karena teknologinya. Mereka gagal karena bisnis membangun sistem yang salah terlalu cepat.",
   path: "/cara-kerja",
 });
-
-const AGAINST = [
-  "Pengembangan berbasis fitur tanpa pemetaan kebutuhan yang matang",
-  "Melewatkan fase discovery demi kecepatan semu",
-  "Sistem yang tidak dirancang untuk berubah",
-  "Vendor yang selesai di delivery, lalu menghilang",
-];
-
-const PRINCIPLES = [
-  { eyebrow: "01", title: "Kami mulai dari kejelasan, bukan kode", body: "Membangun sistem tanpa kejelasan hanya mempercepat kegagalan." },
-  {
-    eyebrow: "02",
-    title: "Kami merancang untuk perubahan",
-    body: "Sistem yang baik bukan yang paling lengkap, tetapi yang tetap stabil saat kebutuhan berubah.",
-  },
-  {
-    eyebrow: "03",
-    title: 'Kami lebih sering berkata "tidak"',
-    body: "Menolak keputusan buruk di awal jauh lebih murah daripada memperbaikinya di akhir.",
-  },
-  {
-    eyebrow: "04",
-    title: "Kami berpikir sebagai partner",
-    body: "Tugas Kami bukan sekadar mengerjakan, tetapi menjaga sistem bisnis Anda tetap masuk akal.",
-  },
-];
-
-const STAGES = [
-  {
-    number: "01",
-    title: "Discovery & Alignment",
-    body: "Workshop dengan stakeholder untuk memahami tujuan bisnis, pain point, dan proses yang berjalan. Output: dokumen kebutuhan dan blueprint sistem.",
-  },
-  {
-    number: "02",
-    title: "System Blueprint",
-    body: "Arsitektur sistem, skema database, mockup UI/UX, dan dokumentasi teknis didiskusikan dan disetujui sebelum development.",
-  },
-  {
-    number: "03",
-    title: "Modular Implementation",
-    body: "Development iteratif per modul. Setiap modul diuji dan direview sebelum lanjut, dengan demo dan umpan balik rutin.",
-  },
-  {
-    number: "04",
-    title: "Stabilization & Growth",
-    body: "Monitoring setelah go-live, pelatihan tim internal, knowledge transfer, dan dukungan pengembangan berkelanjutan.",
-  },
-];
-
-const IMPACT = [
-  { eyebrow: "Waktu", title: "Proses operasional lebih efisien", body: "Tim berhenti mengerjakan ulang hal yang sama dan menunggu rekap manual." },
-  { eyebrow: "Kontrol", title: "Data rapi, perubahan terkelola", body: "Setiap perubahan terdokumentasi dan bisa ditelusuri." },
-  { eyebrow: "Stabilitas", title: "Tumbuh tanpa dibangun ulang", body: "Modul baru ditambahkan tanpa membongkar yang sudah berjalan." },
-];
 
 export default function CaraKerjaPage() {
   return (
@@ -79,74 +28,122 @@ export default function CaraKerjaPage() {
         lead="Sebagian besar sistem internal tidak gagal karena teknologinya. Mereka gagal karena bisnis membangun sistem yang salah terlalu cepat."
       />
 
-      <section aria-labelledby="lawan" className="container-site py-16 lg:py-24">
-        <Reveal className="flex flex-col gap-8 lg:flex-row lg:gap-16">
-          <div className="flex flex-col gap-4 lg:w-[520px] lg:shrink-0">
-            <p className="text-tagline text-cyan-ink">Yang Kami lawan</p>
-            <h2 id="lawan" className="text-heading text-ink">
-              Bukan kompetitor, tapi pola kerja yang keliru
-            </h2>
-            <p className="text-body text-ink-muted">
-              Pola ini hampir selalu berakhir sama: waktu terbuang, biaya membengkak, dan sistem akhirnya ditinggalkan.
-            </p>
-          </div>
-          <ul className="flex-1">
-            {AGAINST.map((t) => (
-              <li key={t} className="flex gap-4 border-t border-line py-5">
-                <span className="w-14 shrink-0 pt-1 text-[14px] leading-[22px] font-medium text-ink-muted">Tidak</span>
-                <span className="text-title text-ink">{t}</span>
-              </li>
+      <section aria-labelledby="lawan" className="section-block">
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
+            <SectionHead
+              id="lawan"
+              eyebrow="Yang kami lawan"
+              title="Bukan kompetitor, tapi pola kerja yang keliru"
+              intro="Pola ini hampir selalu berakhir sama: waktu terbuang, biaya membengkak, dan sistem akhirnya ditinggalkan."
+            />
+          </Anim>
+          <ul className="mt-12 grid gap-6 md:grid-cols-2">
+            {MISCONCEPTIONS.map((t, i) => (
+              <Anim
+                as="li"
+                key={t}
+                index={i}
+                className="flex items-start gap-5 rounded-2xl border border-line bg-surface p-7 transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-ink-muted"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-ink-muted">
+                  <CrossIcon className="h-[18px] w-[18px]" />
+                </span>
+                <h3 className="text-[18px] leading-[26px] font-medium text-ink">{t}</h3>
+              </Anim>
             ))}
           </ul>
-        </Reveal>
+        </div>
       </section>
 
-      <section aria-labelledby="prinsip" className="container-site pb-16 lg:pb-24">
-        <Reveal className="flex flex-col gap-8 lg:gap-12">
-          <SectionHead id="prinsip" eyebrow="Prinsip" title="Cara Kami berpikir" />
-          <div className="grid items-start gap-4 md:grid-cols-2 md:gap-6">
-            {PRINCIPLES.map((p) => (
-              <InfoCard key={p.eyebrow} {...p} />
+      <section aria-labelledby="prinsip" className="section-block">
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
+            <SectionHead id="prinsip" eyebrow="Prinsip" title="Cara kami berpikir" />
+          </Anim>
+          <div className="mt-14 grid border-t border-line md:grid-cols-2">
+            {PRINCIPLES.map((p, i) => (
+              <Anim
+                as="article"
+                key={p.number}
+                index={i % 2}
+                className="principle-card flex flex-col gap-3 border-b border-line py-7 md:px-10 md:py-10 md:odd:pl-0 md:even:border-l md:even:pr-0"
+              >
+                <span aria-hidden="true" className="outline-number transition-colors duration-300">
+                  {p.number}
+                </span>
+                <h3 className="text-title text-ink">{p.title}</h3>
+                <p className="text-body text-ink-muted">{p.body}</p>
+              </Anim>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
-      <section aria-labelledby="tahapan" className="container-site pb-16 lg:pb-24">
-        <Reveal className="flex flex-col gap-8 lg:gap-12">
-          <SectionHead id="tahapan" eyebrow="Tahapan" title="Empat tahap dari discovery sampai bertumbuh" />
-          <ol className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {STAGES.map((s) => (
-              <li key={s.number}>
-                <Step {...s} />
-              </li>
-            ))}
-          </ol>
-        </Reveal>
-      </section>
-
-      <section aria-labelledby="dampak" className="container-site pb-16 lg:pb-24">
-        <Reveal className="flex flex-col gap-8 lg:gap-12">
-          <SectionHead id="dampak" eyebrow="Kenapa penting" title="Pendekatan ini berdampak langsung pada tiga hal" />
-          <div className="grid items-start gap-4 md:grid-cols-3 md:gap-6">
-            {IMPACT.map((p) => (
-              <InfoCard key={p.eyebrow} {...p} />
-            ))}
+      <section data-theme="dark" aria-labelledby="tahapan" className="section-block relative overflow-hidden bg-ground">
+        <DotField />
+        <div className="container-narrow relative">
+          <Anim className="max-w-[680px]">
+            <SectionHead id="tahapan" eyebrow="Tahapan" title="Empat tahap dari discovery sampai bertumbuh" />
+          </Anim>
+          <div className="relative mt-14 pl-14 md:pl-[72px]">
+            <span aria-hidden="true" className="absolute top-2 bottom-2 left-[19px] w-0.5 bg-line">
+              <span className="anim-fill-y absolute inset-0 block bg-cyan" />
+            </span>
+            <ol className="flex flex-col gap-10">
+              {STEPS.map((s, i) => (
+                <Anim
+                  as="li"
+                  key={s.number}
+                  index={i}
+                  className="relative grid gap-8 rounded-2xl border border-line bg-surface p-8 transition-[translate,border-color] duration-300 hover:border-cyan md:grid-cols-[5fr_4fr] md:hover:translate-x-2"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-7 -left-14 flex h-10 w-10 items-center justify-center rounded-full border-2 border-cyan bg-[#080808] text-[14px] font-semibold text-cyan md:-left-[72px]"
+                  >
+                    {s.number}
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-title text-ink">{s.title}</h3>
+                    <p className="text-body text-ink-muted">{s.body}</p>
+                  </div>
+                  <div className="flex flex-col justify-center gap-1 border-l-2 border-cyan pl-5">
+                    <p className="text-tagline tracking-[0.1em] text-cyan-ink uppercase">Output</p>
+                    <p className="text-body text-ink">{s.output}</p>
+                  </div>
+                </Anim>
+              ))}
+            </ol>
           </div>
-        </Reveal>
+        </div>
       </section>
 
-      <section aria-label="Ajakan diskusi" className="container-site pb-16 lg:pb-24">
-        <Reveal>
-          <div className="flex flex-col items-start gap-4 rounded-lg border-2 border-cyan bg-surface p-6 lg:p-12">
-            <p className="max-w-[900px] text-heading text-ink">
-              Jika Anda mencari pengembangan yang cepat dan murah, Kami kemungkinan bukan pilihan yang tepat. Jika Anda mencari
-              partner untuk sistem yang stabil dan siap bertumbuh, mari berdiskusi.
-            </p>
-            <Button href="/diskusi">Diskusi Kebutuhan Sistem</Button>
+      <section aria-labelledby="dampak" className="section-block">
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
+            <SectionHead id="dampak" eyebrow="Kenapa penting" title="Pendekatan ini berdampak langsung pada tiga hal" />
+          </Anim>
+          <div className="mt-12">
+            <WhyTabs />
           </div>
-        </Reveal>
+        </div>
       </section>
+
+      <BandCta
+        id="ajakan"
+        eyebrow="Ajakan diskusi"
+        title="Partner untuk sistem yang stabil dan siap bertumbuh"
+        body="Jika Anda mencari pengembangan yang cepat dan murah, kami kemungkinan bukan pilihan yang tepat. Jika Anda mencari partner jangka panjang, mari berdiskusi."
+      >
+        <Link
+          href="/diskusi"
+          className="inline-flex min-h-12 items-center rounded-md bg-[#080808] px-6 font-medium text-white transition-colors hover:bg-[#181818]"
+        >
+          Diskusi Kebutuhan Sistem
+        </Link>
+      </BandCta>
+
       <JsonLd data={breadcrumbJsonLd([{ name: "Cara Kerja", path: "/cara-kerja" }])} />
     </>
   );

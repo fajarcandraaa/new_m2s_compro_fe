@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 const cls = (selected: boolean) =>
   cn(
-    "inline-flex rounded-md border px-4 py-2 text-[14px] leading-[22px] font-medium whitespace-nowrap transition-colors",
+    "inline-flex rounded-md border px-4 py-2 text-[14px] leading-[22px] font-medium whitespace-nowrap transition-[color,background-color,border-color,translate] duration-200 hover:-translate-y-0.5",
     selected ? "bg-ink border-ink text-surface" : "bg-surface border-line text-ink hover:border-cyan",
   );
 

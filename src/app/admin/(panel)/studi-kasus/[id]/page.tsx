@@ -24,6 +24,7 @@ const LIST_FIELDS = ["scope", "initialConditions", "risks", "approach", "solutio
 const metric = z.object({
   value: z.string().trim().min(1, "Wajib diisi.").max(20, "Maks. 20 karakter."),
   label: z.string().trim().min(1, "Wajib diisi.").max(160),
+  before: z.string().trim().max(120, "Maks. 120 karakter."),
 });
 const schema = z.object({
   systemName: z.string().trim().min(1, "Nama sistem wajib diisi.").max(60),
@@ -61,8 +62,8 @@ const EMPTY: V = {
   summary: "",
   cardBody: "",
   metrics: [
-    { value: "", label: "" },
-    { value: "", label: "" },
+    { value: "", label: "", before: "" },
+    { value: "", label: "", before: "" },
   ],
   scope: "",
   initialConditionsTitle: "",
@@ -87,7 +88,11 @@ function toForm(c: CaseStudyAdmin): V {
     slug: c.slug,
     summary: c.summary,
     cardBody: c.cardBody,
-    metrics: [0, 1].map((i) => ({ value: c.metrics[i]?.value ?? "", label: c.metrics[i]?.label ?? "" })),
+    metrics: [0, 1].map((i) => ({
+      value: c.metrics[i]?.value ?? "",
+      label: c.metrics[i]?.label ?? "",
+      before: c.metrics[i]?.before ?? "",
+    })),
     scope: arrayToLines(c.scope),
     initialConditionsTitle: c.initialConditionsTitle,
     initialConditions: arrayToLines(c.initialConditions),
@@ -248,9 +253,15 @@ export default function CaseStudyEditorPage() {
           <Panel title="Angka dampak">
             <p className="text-small text-ink-muted">Tampil di kartu studi kasus. Pakai angka yang bisa dipertanggungjawabkan.</p>
             {[0, 1].map((i) => (
-              <div key={i} className="grid grid-cols-[80px_1fr] gap-3">
+              <div key={i} className="grid gap-3 sm:grid-cols-[80px_1fr_1fr]">
                 <Input label={`Angka ${i + 1}`} error={e.metrics?.[i]?.value?.message} {...register(`metrics.${i}.value` as const)} />
                 <Input label="Keterangan" error={e.metrics?.[i]?.label?.message} {...register(`metrics.${i}.label` as const)} />
+                <Input
+                  label="Sebelumnya (opsional)"
+                  placeholder="mis. 4 spreadsheet terpisah"
+                  error={e.metrics?.[i]?.before?.message}
+                  {...register(`metrics.${i}.before` as const)}
+                />
               </div>
             ))}
             {e.metrics?.message ? <ErrorBox message={e.metrics.message} /> : null}

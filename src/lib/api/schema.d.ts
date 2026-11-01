@@ -1304,6 +1304,8 @@ export interface components {
             /** @description Big number, e.g. `1`, `40%`. */
             value: string;
             label: string;
+            /** @description Baseline (previous condition) shown as "Sebelumnya: …" under the label. Omitted → empty. */
+            before?: string;
         };
         /** @description Case-study card (public list). */
         CaseStudySummary: {
@@ -1322,6 +1324,12 @@ export interface components {
             /** @description Exactly two impact numbers. */
             metrics: components["schemas"]["CaseStudyMetric"][];
             scope: string[];
+            initialConditionsTitle: string;
+            /** @description Kondisi awal untuk kolom "Sebelum". */
+            initialConditions: string[];
+            /** @description Solusi untuk kolom "Sesudah". */
+            solutions: string[];
+            impactTitle: string;
             /**
              * Format: date-time
              * @description RFC3339, UTC.
@@ -2828,7 +2836,19 @@ export interface operations {
                      *             "Rekrutmen",
                      *             "Penilaian kinerja",
                      *             "Dashboard manajemen"
-                     *           ]
+                     *           ],
+                     *           "initialConditionsTitle": "Data tersebar, keputusan berbasis asumsi",
+                     *           "initialConditions": [
+                     *             "Data karyawan tidak sinkron antara tim HR dan bagian lainnya",
+                     *             "Tidak ada wadah terpusat untuk aspirasi dan feedback karyawan",
+                     *             "Proses rekrutmen tersebar di berbagai platform eksternal"
+                     *           ],
+                     *           "solutions": [
+                     *             "Database karyawan terpusat",
+                     *             "Modul aspirasi dan feedback karyawan",
+                     *             "Sistem rekrutmen internal terintegrasi"
+                     *           ],
+                     *           "impactTitle": "Manajemen bisa memutuskan dengan tenang dan terukur"
                      *         },
                      *         {
                      *           "slug": "rapi-sistem-penataan-proses-dokumen",
@@ -2854,7 +2874,19 @@ export interface operations {
                      *             "DMS",
                      *             "Approval Workflow",
                      *             "Arsip dokumen"
-                     *           ]
+                     *           ],
+                     *           "initialConditionsTitle": "Aplikasi statis yang tidak bisa mengikuti bisnis",
+                     *           "initialConditions": [
+                     *             "Setiap penambahan data atau perubahan proses membutuhkan perubahan kode",
+                     *             "Workflow approval tidak fleksibel",
+                     *             "Performa aplikasi menurun seiring bertambahnya kompleksitas"
+                     *           ],
+                     *           "solutions": [
+                     *             "Struktur data dan workflow dinamis",
+                     *             "Sistem approval fleksibel",
+                     *             "Aplikasi yang menyesuaikan perubahan proses bisnis"
+                     *           ],
+                     *           "impactTitle": "Perubahan operasional jadi cepat, tim IT kembali jadi enabler"
                      *         }
                      *       ],
                      *       "meta": {

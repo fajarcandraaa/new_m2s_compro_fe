@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CaseStudyCard } from "@/components/site/CaseStudyCard";
+import { BeforeAfter } from "@/components/site/BeforeAfter";
+import { CaseStudyCase } from "@/components/site/CaseStudyCase";
 import { DiscussPanel } from "@/components/site/DiscussPanel";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
-import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Tag";
 import { getCaseStudies, getCaseStudy, getSite } from "@/lib/api/public";
 import { breadcrumbJsonLd, caseStudyJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
@@ -44,14 +43,20 @@ function Block({ id, eyebrow, title, children }: { id: string; eyebrow: string; 
   );
 }
 
-function MarkedList({ items, marker, markerClass = "text-cyan-ink" }: { items: string[]; marker: (i: number) => string; markerClass?: string }) {
+function NumberedList({ items, icon }: { items: string[]; icon?: "x" | "check" }) {
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="flex flex-col">
       {items.map((t, i) => (
-        <li key={`${i}-${t}`} className="flex gap-4">
-          <span aria-hidden={marker(i) === "—" || undefined} className={`w-12 shrink-0 text-[14px] leading-[26px] font-medium ${markerClass}`}>
-            {marker(i)}
-          </span>
+        <li key={`${i}-${t}`} className={icon ? "flex items-start gap-4 border-t border-line py-4 first:border-t-0 first:pt-0" : "flex gap-5 border-t border-line py-4 first:border-t-0 first:pt-0"}>
+          {icon ? (
+            <span aria-hidden="true" className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border border-line text-small text-ink-muted">
+              {icon === "x" ? "×" : "✓"}
+            </span>
+          ) : (
+            <span aria-hidden="true" className="w-8 shrink-0 font-mono text-small text-cyan-ink">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+          )}
           <span className="text-body text-ink">{t}</span>
         </li>
       ))}
@@ -68,60 +73,59 @@ export default async function StudiKasusDetailPage({ params }: Props) {
   return (
     <>
       <PageHero eyebrow={`Studi kasus · ${cs.systemName} · ${cs.category}`} title={cs.title} lead={cs.summary} />
-      <div className="container-site py-16 lg:py-24">
-        <Card className="mb-12 flex flex-col gap-6 p-6 md:flex-row md:items-start md:gap-12 lg:mb-14 lg:p-8">
-          <dl className="grid grid-cols-2 gap-6 md:flex md:gap-12">
-            {cs.metrics.map((m) => (
-              <div key={m.label} className="flex flex-col md:w-[180px]">
-                <dt className="text-small text-ink-muted">{m.label}</dt>
-                <dd className="order-first text-display text-ink">{m.value}</dd>
+      <div className="container-narrow section-block">
+        <div className="mb-12 grid overflow-hidden rounded-2xl border border-line lg:mb-14 lg:grid-cols-[7fr_5fr]">
+          <div className="flex flex-col justify-center gap-6 bg-surface p-6 lg:p-10">
+            <BeforeAfter
+              before={cs.initialConditions}
+              beforeNote={cs.initialConditionsTitle}
+              after={cs.solutions}
+              afterNote={cs.impactTitle}
+            />
+          </div>
+
+          <div
+            data-theme="dark"
+            className="relative flex flex-col justify-center gap-8 bg-[#080808] p-6 lg:p-10"
+            style={{
+              backgroundImage: "radial-gradient(#181818 1.6px, transparent 1.8px)",
+              backgroundSize: "32px 32px",
+            }}
+          >
+            {cs.scope.length > 0 ? (
+              <div className="relative z-[1] flex flex-col gap-3">
+                <p className="text-tagline text-ink-muted">Cakupan sistem</p>
+                <ul className="flex flex-wrap gap-2">
+                  {cs.scope.map((s) => (
+                    <li key={s} className="rounded-[4px] border border-cyan px-2.5 py-0.5 text-small text-ink">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
-          </dl>
-          {cs.scope.length > 0 ? (
-            <div className="flex flex-col gap-2 md:pt-2">
-              <p className="text-small text-ink-muted">Cakupan sistem</p>
-              <ul className="flex flex-wrap gap-2">
-                {cs.scope.map((s) => (
-                  <li key={s}>
-                    <Chip>{s}</Chip>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </Card>
+            ) : null}
+          </div>
+        </div>
 
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
           <article className="flex min-w-0 flex-1 flex-col gap-12 lg:max-w-[804px]">
-            {cs.initialConditions.length > 0 ? (
-              <Block id="kondisi" eyebrow="Kondisi awal" title={cs.initialConditionsTitle}>
-                <MarkedList items={cs.initialConditions} marker={() => "—"} />
-              </Block>
-            ) : null}
             {cs.risks.length > 0 ? (
               <Block id="risiko" eyebrow="Risiko jika dibiarkan" title={cs.risksTitle}>
-                <MarkedList items={cs.risks} marker={() => "Tidak"} markerClass="text-ink-muted" />
+                <NumberedList items={cs.risks} icon="x" />
               </Block>
             ) : null}
-            {cs.approach.length > 0 || cs.solutions.length > 0 ? (
+            {cs.approach.length > 0 ? (
               <Block id="pendekatan" eyebrow="Pendekatan Mind2Screen" title={cs.approachTitle}>
-                <MarkedList items={cs.approach} marker={(i) => String(i + 1).padStart(2, "0")} />
-                {cs.solutions.length > 0 ? (
-                  <div className="mt-4 flex flex-col gap-3">
-                    <h3 className="text-title text-ink">Yang Kami bangun</h3>
-                    <MarkedList items={cs.solutions} marker={() => "—"} />
-                  </div>
-                ) : null}
+                <NumberedList items={cs.approach} />
               </Block>
             ) : null}
             {cs.impacts.length > 0 ? (
               <Block id="dampak" eyebrow="Dampak bisnis" title={cs.impactTitle}>
-                <MarkedList items={cs.impacts} marker={() => "Ya"} />
+                <NumberedList items={cs.impacts} icon="check" />
               </Block>
             ) : null}
             {cs.lesson ? (
-              <section aria-labelledby="pelajaran" className="flex flex-col gap-4 rounded-lg border-2 border-cyan bg-surface p-6 lg:p-8">
+              <section aria-labelledby="pelajaran" className="flex flex-col gap-4 rounded-2xl border-2 border-cyan bg-surface p-6 lg:p-8">
                 <h2 id="pelajaran" className="text-tagline text-cyan-ink">
                   Pelajaran
                 </h2>
@@ -144,13 +148,11 @@ export default async function StudiKasusDetailPage({ params }: Props) {
             <h2 id="lain" className="text-tagline text-cyan-ink">
               Studi kasus lain
             </h2>
-            <ul className="grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-6">
               {others.map((c) => (
-                <li key={c.slug}>
-                  <CaseStudyCard cs={c} />
-                </li>
+                <CaseStudyCase key={c.slug} cs={c} />
               ))}
-            </ul>
+            </div>
           </section>
         ) : null}
       </div>

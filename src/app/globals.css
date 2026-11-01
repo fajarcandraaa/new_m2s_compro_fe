@@ -164,6 +164,39 @@
   }
 }
 
+/* Container section hasil redesign: 1120 konten + gutter 24 (mengikuti mockup). */
+@utility container-narrow {
+  width: 100%;
+  max-width: 1168px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@utility section-block {
+  padding-block: 72px;
+  @media (width >= 64rem) {
+    padding-block: 104px;
+  }
+}
+
+/* Nomor outline besar pada daftar masalah beranda (mockup `.pnum`). */
+.outline-number {
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: 600;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--cyan-ink);
+}
+@media (width >= 64rem) {
+  .outline-number {
+    font-size: 56px;
+    line-height: 56px;
+  }
+}
+/* Angka prinsip terisi saat kartu di-hover (mockup halaman Cara Kerja). */
+.principle-card:hover .outline-number {
+  color: var(--cyan);
+}
+
 /* Article body (sanitized HTML from the API) */
 .prose-m2s {
   color: var(--ink);
@@ -290,5 +323,155 @@
   .hero-lit-dot {
     animation: none;
     opacity: var(--o);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Animasi masuk berbasis scroll.
+ * Konten SELALU terlihat tanpa animasi; animasi hanya aktif di browser yang
+ * mendukung `animation-timeline: view()`. Di browser lain, <Anim> (client)
+ * memakai fallback motion — lihat src/components/site/Anim.tsx.
+ * Delay bertahap per elemen memakai custom property --i (0, 1, 2, …).
+ * ------------------------------------------------------------------------- */
+@keyframes anim-rise {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes anim-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes anim-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes anim-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes anim-grow-y {
+  from {
+    transform: scaleY(0.08);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes anim-fill-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .anim-rise,
+  .anim-slide,
+  .anim-pop {
+    animation: linear both;
+    animation-timeline: view();
+    /* Elemen memudar masuk sejak masuk viewport, selesai sebelum tengah layar. */
+    animation-range: entry calc(var(--i, 0) * 5%) entry calc(40% + var(--i, 0) * 5%);
+  }
+  .anim-rise {
+    animation-name: anim-rise;
+  }
+  .anim-slide {
+    animation-name: anim-slide;
+    animation-range: entry calc(var(--i, 0) * 6%) entry calc(45% + var(--i, 0) * 6%);
+  }
+  .anim-pop {
+    animation-name: anim-pop;
+  }
+  .anim-grow {
+    transform-origin: left;
+    animation: anim-grow linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 70%;
+  }
+  /* Garis waktu vertikal yang terisi selama scroll (mockup `.spine i`). */
+  .anim-fill-y {
+    transform-origin: top;
+    animation: anim-fill-y linear both;
+    animation-timeline: view();
+    animation-range: entry 30% cover 75%;
+  }
+}
+
+/* Animasi loop dekoratif (bintang, alur DMS) dan transisi panel tab. */
+@keyframes anim-travel {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 12px);
+    opacity: 0;
+  }
+}
+@keyframes anim-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes anim-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.anim-travel {
+  animation: anim-travel 3.2s ease-in-out infinite;
+}
+.anim-drift {
+  animation: anim-drift 5s ease-in-out infinite;
+}
+.anim-fadein {
+  animation: anim-fadein 0.45s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-travel,
+  .anim-drift,
+  .anim-fadein,
+  .anim-fill-y {
+    animation: none;
   }
 }

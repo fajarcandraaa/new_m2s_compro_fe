@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArticleCard } from "@/components/site/ArticleCard";
+import { Anim } from "@/components/site/Anim";
 import { ArticleCover } from "@/components/site/ArticleCover";
+import { ArrowIcon, StarIcon } from "@/components/site/Icons";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Pagination } from "@/components/site/Pagination";
-import { Reveal } from "@/components/site/Reveal";
 import { FilterLink } from "@/components/ui/Filter";
 import { getArticles, getTags } from "@/lib/api/public";
 import { formatDate } from "@/lib/format";
@@ -24,7 +24,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const { tag, page } = await searchParams;
   const base = pageMetadata({
     title: "Artikel",
-    description: "Catatan Kami tentang sistem internal, keamanan data, dan cara memakai teknologi dengan lebih bijak.",
+    description: "Catatan kami tentang sistem internal, keamanan data, dan cara memakai teknologi dengan lebih bijak.",
     path: "/artikel",
   });
   // Filtered/paginated variants point their canonical at the main list.
@@ -52,10 +52,10 @@ export default async function ArtikelPage({ searchParams }: Props) {
       <PageHero
         eyebrow="Artikel"
         title="Artikel"
-        lead="Catatan Kami tentang sistem internal, keamanan data, dan cara memakai teknologi dengan lebih bijak."
+        lead="Catatan kami tentang sistem internal, keamanan data, dan cara memakai teknologi dengan lebih bijak."
       />
-      <section aria-label="Daftar artikel" className="container-site py-16 lg:py-24">
-        <Reveal className="flex flex-col gap-8 lg:gap-12">
+      <section aria-label="Daftar artikel" className="section-block">
+        <div className="container-narrow flex flex-col gap-10">
           {tags.length > 0 ? (
             <nav aria-label="Filter tag" className="flex flex-wrap gap-2">
               <FilterLink href="/artikel" selected={!tag}>
@@ -82,13 +82,16 @@ export default async function ArtikelPage({ searchParams }: Props) {
           ) : null}
 
           {featured ? (
-            <article className="group relative grid items-center gap-6 lg:grid-cols-[700px_1fr] lg:gap-12">
-              <ArticleCover src={featured.coverImageUrl} alt="" priority sizes="(min-width: 1024px) 700px, 100vw" />
-              <div className="flex flex-col gap-4">
+            <Anim as="article" className="group relative grid overflow-hidden rounded-lg border border-line bg-surface transition-transform duration-300 hover:-translate-y-1.5 lg:grid-cols-2">
+              <div className="relative">
+                <ArticleCover src={featured.coverImageUrl} alt="" priority sizes="(min-width: 1024px) 560px, 100vw" />
+                <StarIcon className="anim-drift pointer-events-none absolute top-6 left-6 h-12 w-12 text-cyan" />
+              </div>
+              <div className="flex flex-col justify-center gap-4 p-6 lg:p-10">
                 <p className="text-tagline text-cyan-ink">
                   Terbaru{featured.tags[0] ? ` · ${featured.tags[0].name}` : ""}
                 </p>
-                <h2 className="text-heading text-ink group-hover:text-cyan-ink">
+                <h2 className="text-heading text-ink transition-colors group-hover:text-cyan-ink">
                   <Link href={`/artikel/${featured.slug}`} className="after:absolute after:inset-0 after:content-['']">
                     {featured.title}
                   </Link>
@@ -97,19 +100,51 @@ export default async function ArtikelPage({ searchParams }: Props) {
                 <p className="text-small text-ink-muted">
                   <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time> · {featured.readMinutes} menit baca
                 </p>
-                <span className="font-medium text-cyan-ink">Baca artikel</span>
+                <span className="inline-flex items-center gap-2 font-medium text-cyan-ink transition-[gap] duration-300 group-hover:gap-4">
+                  Baca artikel
+                  <ArrowIcon className="h-4 w-4" />
+                </span>
               </div>
-            </article>
+            </Anim>
           ) : null}
 
           {rest.length > 0 ? (
-            <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2">
-              {rest.map((a) => (a ? <li key={a.slug}><ArticleCard article={a} /></li> : null))}
+            <ul className="flex flex-col">
+              {rest.map((a, i) =>
+                a ? (
+                  <Anim as="li" key={a.slug} index={i} className="border-t border-line transition-colors last:border-b hover:bg-surface">
+                    <Link
+                      href={`/artikel/${a.slug}`}
+                      className="group relative flex flex-col gap-2 py-6 md:flex-row md:items-center md:justify-between md:gap-8"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <p className="text-tagline text-cyan-ink">{a.tags[0]?.name ?? "Artikel"}</p>
+                        <h3 className="text-title text-ink transition-colors group-hover:text-cyan-ink">{a.title}</h3>
+                        <p className="max-w-[640px] text-small text-ink-muted">{a.excerpt}</p>
+                      </div>
+                      <div className="flex shrink-0 flex-col items-start gap-1 text-small text-ink-muted md:items-end">
+                        <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
+                        <span>{a.readMinutes} menit baca</span>
+                        <span
+                          aria-hidden="true"
+                          className="mt-2 hidden h-11 w-11 items-center justify-center rounded-md border border-line text-ink transition-[background-color,border-color,translate] duration-300 group-hover:translate-x-1 group-hover:border-cyan group-hover:bg-cyan group-hover:text-on-cyan md:flex"
+                        >
+                          <ArrowIcon className="h-[18px] w-[18px]" />
+                        </span>
+                      </div>
+                      <span
+                        aria-hidden="true"
+                        className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-cyan transition-transform duration-300 group-hover:scale-x-100"
+                      />
+                    </Link>
+                  </Anim>
+                ) : null,
+              )}
             </ul>
           ) : null}
 
           <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
-        </Reveal>
+        </div>
       </section>
       <JsonLd data={breadcrumbJsonLd([{ name: "Artikel", path: "/artikel" }])} />
     </>

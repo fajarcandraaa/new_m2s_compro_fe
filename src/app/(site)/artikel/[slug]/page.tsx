@@ -58,7 +58,7 @@ export default async function ArtikelDetailPage({ params }: Props) {
           </>
         }
       />
-      <article className="container-site py-12 lg:py-16">
+      <article className="container-narrow section-block">
         <div className="mx-auto flex max-w-[720px] flex-col gap-8">
           <ArticleCover src={article.coverImageUrl} alt={article.title} priority sizes="(min-width: 768px) 720px, 100vw" />
           {/* contentHtml is sanitised by the BE (bluemonday UGC policy) before it is stored. */}
@@ -98,7 +98,7 @@ export default async function ArtikelDetailPage({ params }: Props) {
         </div>
       </article>
       {related.length > 0 ? (
-        <section aria-labelledby="terkait" className="container-site pb-16 lg:pb-24">
+        <section aria-labelledby="terkait" className="container-narrow section-block pt-0">
           <h2 id="terkait" className="text-tagline text-cyan-ink">
             Artikel terkait
           </h2>
