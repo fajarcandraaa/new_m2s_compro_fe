@@ -15,6 +15,9 @@ export const STORY_LEAD =
 export const STORY_BODY =
   "Yang dimulai sebagai perjalanan freelance perlahan menjadi tempat bagi para profesional untuk bertumbuh, berkolaborasi, dan membangun sistem yang benar-benar dipakai.";
 
+export const STORY_CLOSING =
+  "Nama kami mencerminkan misinya: Mind to Screen, mengubah ide dan kebutuhan bisnis menjadi sistem digital yang nyata.";
+
 export type Value = { number: string; title: string; body: string };
 
 export const VALUES: Value[] = [
