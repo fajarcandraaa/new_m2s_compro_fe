@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Anim } from "@/components/site/Anim";
 import { BandCta } from "@/components/site/BandCta";
 import { CaseStudyFilter } from "@/components/site/CaseStudyFilter";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -27,7 +28,9 @@ export default async function StudiKasusPage() {
       />
       <section aria-label="Daftar studi kasus" className="section-block">
         <div className="container-narrow">
-          <CaseStudyFilter items={items} />
+          <Anim>
+            <CaseStudyFilter items={items} />
+          </Anim>
         </div>
       </section>
       <BandCta

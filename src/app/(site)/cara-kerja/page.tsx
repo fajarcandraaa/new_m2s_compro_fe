@@ -43,7 +43,7 @@ export default function CaraKerjaPage() {
           </Anim>
           <ul className="grid gap-4 sm:grid-cols-2">
             {MISCONCEPTIONS.map((t, i) => (
-              <Anim as="li" key={t} index={i} className="flex gap-4 rounded-lg border border-line bg-surface p-6">
+              <Anim as="li" key={t} index={i} className="flex gap-4 rounded-lg border border-line bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-ink-muted">
                 <span className="text-ink-muted">
                   <CrossIcon />
                 </span>
@@ -77,15 +77,21 @@ export default function CaraKerjaPage() {
           <Anim>
             <SectionHead id="tahapan" eyebrow="Tahapan" title="Empat tahap dari discovery sampai bertumbuh" />
           </Anim>
-          <ol className="flex flex-col">
+          <div className="relative ml-5 md:ml-11">
+            <span aria-hidden="true" className="absolute top-2 bottom-2 left-[19px] w-0.5 bg-line">
+              <span className="anim-fill-y absolute inset-0 block bg-cyan" />
+            </span>
+            <ol className="flex flex-col">
             {STEPS.map((s, i) => (
               <Anim
                 as="li"
                 key={s.number}
                 index={i}
-                className="grid gap-4 border-t border-line py-8 last:border-b lg:grid-cols-[80px_1fr_260px] lg:gap-8 lg:py-10"
+                className="relative grid gap-4 border-t border-line py-8 pl-14 last:border-b md:pl-20 lg:grid-cols-[1fr_260px] lg:gap-8 lg:py-10"
               >
-                <span className="text-tagline text-cyan-ink">{s.number}</span>
+                <span aria-hidden="true" className="absolute left-0 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-ground text-tagline text-cyan-ink">
+                  {s.number}
+                </span>
                 <div className="flex flex-col gap-2">
                   <h3 className="text-title text-ink">{s.title}</h3>
                   <p className="text-body text-ink-muted">{s.body}</p>
@@ -104,7 +110,8 @@ export default function CaraKerjaPage() {
                 </div>
               </Anim>
             ))}
-          </ol>
+            </ol>
+          </div>
         </div>
       </section>
 

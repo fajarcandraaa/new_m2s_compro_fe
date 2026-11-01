@@ -8,7 +8,7 @@ export function PackageCard({ pkg, serviceSlug }: { pkg: ServicePackage; service
   return (
     <article
       className={cn(
-        "flex h-full flex-col gap-4 rounded-lg bg-surface p-6 lg:p-8",
+        "flex h-full flex-col gap-4 rounded-lg bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-8",
         pkg.highlighted ? "border-2 border-cyan" : "border border-line",
       )}
     >

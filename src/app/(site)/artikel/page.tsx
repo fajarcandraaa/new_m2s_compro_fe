@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Anim } from "@/components/site/Anim";
 import { ArticleCover } from "@/components/site/ArticleCover";
+import { ArrowIcon, StarIcon } from "@/components/site/Icons";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/site/PageHero";
 import { Pagination } from "@/components/site/Pagination";
@@ -81,8 +82,11 @@ export default async function ArtikelPage({ searchParams }: Props) {
           ) : null}
 
           {featured ? (
-            <Anim as="article" className="group relative grid overflow-hidden rounded-lg border border-line bg-surface lg:grid-cols-2">
-              <ArticleCover src={featured.coverImageUrl} alt="" priority sizes="(min-width: 1024px) 560px, 100vw" />
+            <Anim as="article" className="group relative grid overflow-hidden rounded-lg border border-line bg-surface transition-transform duration-300 hover:-translate-y-1.5 lg:grid-cols-2">
+              <div className="relative">
+                <ArticleCover src={featured.coverImageUrl} alt="" priority sizes="(min-width: 1024px) 560px, 100vw" />
+                <StarIcon className="anim-drift pointer-events-none absolute top-6 left-6 h-12 w-12 text-cyan" />
+              </div>
               <div className="flex flex-col justify-center gap-4 p-6 lg:p-10">
                 <p className="text-tagline text-cyan-ink">
                   Terbaru{featured.tags[0] ? ` · ${featured.tags[0].name}` : ""}
@@ -96,7 +100,10 @@ export default async function ArtikelPage({ searchParams }: Props) {
                 <p className="text-small text-ink-muted">
                   <time dateTime={featured.publishedAt}>{formatDate(featured.publishedAt)}</time> · {featured.readMinutes} menit baca
                 </p>
-                <span className="font-medium text-cyan-ink">Baca artikel</span>
+                <span className="inline-flex items-center gap-2 font-medium text-cyan-ink transition-[gap] duration-300 group-hover:gap-4">
+                  Baca artikel
+                  <ArrowIcon className="h-4 w-4" />
+                </span>
               </div>
             </Anim>
           ) : null}
@@ -105,7 +112,7 @@ export default async function ArtikelPage({ searchParams }: Props) {
             <ul className="flex flex-col">
               {rest.map((a, i) =>
                 a ? (
-                  <Anim as="li" key={a.slug} index={i} className="border-t border-line last:border-b">
+                  <Anim as="li" key={a.slug} index={i} className="border-t border-line transition-colors last:border-b hover:bg-surface">
                     <Link
                       href={`/artikel/${a.slug}`}
                       className="group relative flex flex-col gap-2 py-6 md:flex-row md:items-center md:justify-between md:gap-8"
@@ -118,6 +125,12 @@ export default async function ArtikelPage({ searchParams }: Props) {
                       <div className="flex shrink-0 flex-col items-start gap-1 text-small text-ink-muted md:items-end">
                         <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
                         <span>{a.readMinutes} menit baca</span>
+                        <span
+                          aria-hidden="true"
+                          className="mt-2 hidden h-11 w-11 items-center justify-center rounded-md border border-line text-ink transition-[background-color,border-color,translate] duration-300 group-hover:translate-x-1 group-hover:border-cyan group-hover:bg-cyan group-hover:text-on-cyan md:flex"
+                        >
+                          <ArrowIcon className="h-[18px] w-[18px]" />
+                        </span>
                       </div>
                       <span
                         aria-hidden="true"

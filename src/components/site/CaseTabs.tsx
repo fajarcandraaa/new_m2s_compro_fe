@@ -44,7 +44,10 @@ export function CaseTabs({ items, showAllLink = true }: { items: CaseStudySummar
         ) : null}
       </div>
 
-      <div key={cs.slug} className="anim-fadein flex flex-col gap-7 rounded-lg border border-line bg-surface p-6 lg:p-10">
+      <div
+        key={cs.slug}
+        className="anim-fadein group flex flex-col gap-7 rounded-lg border border-line bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-10"
+      >
         <div className="flex flex-col gap-3">
           <p className="text-tagline text-cyan-ink">
             {cs.systemName} · {cs.category}
@@ -65,7 +68,7 @@ export function CaseTabs({ items, showAllLink = true }: { items: CaseStudySummar
         ) : null}
 
         <Link href={`/studi-kasus/${cs.slug}`} className="mt-auto inline-flex items-center gap-1 font-medium text-cyan-ink hover:underline">
-          Baca studi kasus <span aria-hidden="true">→</span>
+          Baca studi kasus <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1.5">→</span>
           <span className="sr-only">: {cs.title}</span>
         </Link>
       </div>

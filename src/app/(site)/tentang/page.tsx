@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Anim } from "@/components/site/Anim";
 import { BandCta } from "@/components/site/BandCta";
 import { JsonLd } from "@/components/site/JsonLd";
+import { StarIcon } from "@/components/site/Icons";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHead } from "@/components/site/SectionHead";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
@@ -44,10 +45,14 @@ export default async function TentangPage() {
           <Anim index={1} className="flex flex-col gap-4 text-body text-ink-muted">
             <p>{STORY_LEAD}</p>
             <p>{STORY_BODY}</p>
-            <p className="border-t border-line pt-4 text-ink">
-              <span aria-hidden="true" className="mr-2 inline-block h-2 w-2 align-middle bg-cyan [clip-path:polygon(0_20%,100%_0,100%_80%,0_100%)]" />
-              {STORY_CLOSING}
-            </p>
+            <div className="flex flex-wrap items-center gap-5 rounded-lg border border-line bg-surface p-6">
+              <StarIcon className="h-11 w-11 shrink-0 text-cyan" />
+              <span aria-hidden="true" className="relative h-0.5 min-w-8 flex-1 bg-cyan">
+                <span className="absolute -top-[5px] right-0 h-3 w-3 rotate-45 border-t-2 border-r-2 border-cyan" />
+              </span>
+              <span aria-hidden="true" className="h-[52px] w-11 shrink-0 bg-[linear-gradient(135deg,#30c2db,#43f4fa)] [clip-path:polygon(0_20%,100%_0,100%_80%,0_100%)]" />
+              <p className="basis-full text-body text-ink">{STORY_CLOSING}</p>
+            </div>
           </Anim>
         </div>
       </section>
@@ -59,7 +64,7 @@ export default async function TentangPage() {
           </Anim>
           <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
             {VALUES.map((v, i) => (
-              <Anim as="article" key={v.number} index={i} className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-6">
+              <Anim as="article" variant="pop" key={v.number} index={i} className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-6">
                 <p className="text-tagline text-cyan-ink">{v.number}</p>
                 <h3 className="text-title text-ink">{v.title}</h3>
                 <p className="text-body text-ink-muted">{v.body}</p>

@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/Card";
 /** Service Card (Figma): all texts and price from CMS > Layanan. The whole card is one link. */
 export function ServiceCard({ service }: { service: Service }) {
   return (
-    <Card as="article" className="group relative flex h-full flex-col gap-6 p-8 transition-colors hover:border-cyan">
+    <Card as="article" className="group relative flex h-full flex-col gap-6 p-8 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan">
+      <span aria-hidden="true" className="absolute top-[-1px] left-8 h-[3px] w-12 bg-cyan transition-[width] duration-[400ms] group-hover:w-[calc(100%-64px)]" />
       <div className="flex flex-col gap-2">
         {service.eyebrow ? <p className="text-tagline text-cyan-ink">{service.eyebrow}</p> : null}
         <h3 className="text-title text-ink">{service.title}</h3>

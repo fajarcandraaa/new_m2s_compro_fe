@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { Anim } from "@/components/site/Anim";
 import { BandCta } from "@/components/site/BandCta";
+import { StarIcon } from "@/components/site/Icons";
 import { JsonLd } from "@/components/site/JsonLd";
 import { PackageCard } from "@/components/site/PackageCard";
 import { PageHero } from "@/components/site/PageHero";
@@ -46,7 +48,7 @@ export default async function LayananPage() {
 
           {featured ? (
             <>
-              <Anim as="article" className="grid overflow-hidden rounded-lg border border-line bg-surface lg:grid-cols-[7fr_5fr]">
+              <Anim as="article" className="grid overflow-hidden rounded-lg border border-line bg-surface transition-transform duration-300 hover:-translate-y-1.5 lg:grid-cols-[7fr_5fr]">
                 <div className="flex flex-col gap-5 p-6 lg:p-12">
                   <p className="text-tagline text-cyan-ink">{featured.eyebrow || featured.tagline}</p>
                   <h3 className="text-display-responsive text-ink">{featured.title}</h3>
@@ -70,6 +72,7 @@ export default async function LayananPage() {
                   </Link>
                 </div>
                 <div aria-hidden="true" className="relative hidden overflow-hidden bg-[linear-gradient(135deg,#30c2db,#43f4fa)] lg:block">
+                  <StarIcon className="anim-drift absolute top-10 right-12 h-12 w-12 text-white/60" />
                   <span className="absolute -bottom-12 -left-12 h-64 w-52 bg-white/25 [clip-path:polygon(0_20%,100%_0,100%_80%,0_100%)]" />
                   <span className="absolute top-12 right-12 h-40 w-28 rounded-lg border-2 border-[#080808]/20" />
                 </div>
@@ -99,10 +102,10 @@ export default async function LayananPage() {
             </Anim>
             {web.packages.length > 0 ? (
               <ul className="grid items-start gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
-                {web.packages.map((p) => (
-                  <li key={p.name} className="h-full">
+                {web.packages.map((p, i) => (
+                  <Anim as="li" key={p.name} index={i} className="h-full">
                     <PackageCard pkg={p} serviceSlug={web.slug} />
-                  </li>
+                  </Anim>
                 ))}
               </ul>
             ) : (
@@ -154,8 +157,8 @@ export default async function LayananPage() {
                 </tr>
               </thead>
               <tbody>
-                {WORK_MODEL_ROWS.map(([aspect, bos, bor]) => (
-                  <tr key={aspect} className="border-t border-line align-top">
+                {WORK_MODEL_ROWS.map(([aspect, bos, bor], i) => (
+                  <tr key={aspect} className="anim-slide border-t border-line align-top" style={{ "--i": i } as CSSProperties}>
                     <th scope="row" className="px-6 py-5 text-small font-normal text-ink-muted lg:pl-8">
                       {aspect}
                     </th>

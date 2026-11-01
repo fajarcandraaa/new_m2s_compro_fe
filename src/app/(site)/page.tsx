@@ -8,7 +8,7 @@ import { BandCta } from "@/components/site/BandCta";
 import { BentoTile } from "@/components/site/BentoTile";
 import { CaseTabs } from "@/components/site/CaseTabs";
 import { ClosingCta } from "@/components/site/ClosingCta";
-import { CheckIcon, CrossIcon } from "@/components/site/Icons";
+import { CheckIcon, CrossIcon, StarIcon } from "@/components/site/Icons";
 import { ModelSwitch } from "@/components/site/ModelSwitch";
 import { ProcessStepper } from "@/components/site/ProcessStepper";
 import { SectionHead } from "@/components/site/SectionHead";
@@ -67,8 +67,11 @@ export default async function HomePage() {
                 as="li"
                 variant="slide"
                 index={i}
-                className="grid grid-cols-[56px_1fr] gap-5 border-t border-line py-8 last:border-b lg:grid-cols-[96px_1fr] lg:gap-8"
+                className="group relative grid grid-cols-[56px_1fr] gap-5 border-t border-line py-8 transition-[padding-left] duration-300 last:border-b hover:pl-3 lg:grid-cols-[96px_1fr] lg:gap-8"
               >
+                <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px">
+                  <span className="absolute inset-0 origin-left scale-x-0 bg-cyan transition-transform duration-500 group-hover:scale-x-100" />
+                </span>
                 <span aria-hidden="true" className="outline-number">
                   {p.number}
                 </span>
@@ -109,9 +112,12 @@ export default async function HomePage() {
                   </ul>
                 ) : null}
                 {s.variant === "hris" ? (
-                  <div aria-hidden="true" className="mt-auto pt-8">
-                    <span className="block h-[3px] w-16 rounded-sm bg-cyan" />
-                  </div>
+                  <>
+                    <StarIcon className="anim-drift absolute top-9 right-10 h-14 w-14 text-cyan" />
+                    <div aria-hidden="true" className="mt-auto pt-8">
+                      <span className="block h-[3px] w-16 rounded-sm bg-cyan" />
+                    </div>
+                  </>
                 ) : null}
                 {s.variant === "dms" ? (
                   <div aria-hidden="true" className="relative mt-auto h-px w-full bg-[#080808]/25">
