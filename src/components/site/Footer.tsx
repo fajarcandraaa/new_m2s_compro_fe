@@ -109,6 +109,11 @@ export function Footer({ site }: { site: Site }) {
             <p>
               © {year} {site.legalName}
             </p>
+            <p>
+              <Link href="/kebijakan-privasi" className="hover:text-cyan-ink">
+                Kebijakan Privasi
+              </Link>
+            </p>
           </div>
           <p className="hidden text-tagline lg:block">{site.tagline}</p>
         </div>

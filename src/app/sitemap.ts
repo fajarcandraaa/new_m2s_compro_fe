@@ -39,6 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...statics,
+    { url: `${SITE_URL}/kebijakan-privasi`, changeFrequency: "yearly" as const, priority: 0.3 },
     ...services.map((s) => ({
       url: `${SITE_URL}/layanan/${s.slug}`,
       lastModified: lastMod(s.updatedAt),
