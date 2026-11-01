@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DotField } from "@/components/brand/DotField";
+import { DotFieldLit } from "@/components/brand/DotFieldLit";
 import { Hero } from "@/components/home/Hero";
 import { TestimonialCarousel } from "@/components/home/TestimonialCarousel";
 import { Anim } from "@/components/site/Anim";
@@ -142,7 +142,7 @@ export default async function HomePage() {
 
       {/* 4. Cara kerja: stepper interaktif di atas latar gelap */}
       <section data-theme="dark" aria-labelledby="proses" className="section-block relative overflow-hidden bg-ground">
-        <DotField />
+        <DotFieldLit />
         <div className="container-narrow relative flex flex-col gap-12">
           <Anim>
             <SectionHead

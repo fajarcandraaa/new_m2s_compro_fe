@@ -326,6 +326,34 @@
   }
 }
 
+/* Dot field yang menyala dari tengah saat section masuk viewport (hero-style).
+ * Tanpa dukungan animasi/property, dot langsung tampil penuh. */
+@property --dot-lit-r {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 130%;
+}
+@keyframes dot-lit-sweep {
+  from {
+    --dot-lit-r: 0%;
+  }
+  to {
+    --dot-lit-r: 130%;
+  }
+}
+.dot-lit {
+  -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 var(--dot-lit-r, 130%), transparent calc(var(--dot-lit-r, 130%) + 20%));
+  mask-image: radial-gradient(circle at 50% 42%, #000 var(--dot-lit-r, 130%), transparent calc(var(--dot-lit-r, 130%) + 20%));
+}
+.dot-lit-host[data-lit] .dot-lit {
+  animation: dot-lit-sweep 1.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot-lit-host[data-lit] .dot-lit {
+    animation: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
  * Animasi masuk berbasis scroll.
  * Konten SELALU terlihat tanpa animasi; animasi hanya aktif di browser yang
