@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DotField } from "@/components/brand/DotField";
 import { Anim } from "@/components/site/Anim";
 import { BandCta } from "@/components/site/BandCta";
 import { JsonLd } from "@/components/site/JsonLd";
@@ -57,17 +58,25 @@ export default async function TentangPage() {
         </div>
       </section>
 
-      <section aria-labelledby="nilai" className="section-block">
-        <div className="container-narrow flex flex-col gap-10">
-          <Anim>
+      <section data-theme="dark" aria-labelledby="nilai" className="section-block relative overflow-hidden bg-ground">
+        <DotField />
+        <div className="container-narrow relative">
+          <Anim className="max-w-[640px]">
             <SectionHead id="nilai" eyebrow="Nilai" title="Lima nilai yang kami pegang" />
           </Anim>
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          <div className="mt-14 flex flex-col gap-4 lg:min-h-[320px] lg:flex-row">
             {VALUES.map((v, i) => (
-              <Anim as="article" variant="pop" key={v.number} index={i} className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-6">
-                <p className="text-tagline text-cyan-ink">{v.number}</p>
-                <h3 className="text-title text-ink">{v.title}</h3>
-                <p className="text-body text-ink-muted">{v.body}</p>
+              <Anim
+                as="article"
+                key={v.number}
+                index={i}
+                className="flex min-w-0 flex-1 basis-0 flex-col justify-between gap-6 rounded-2xl border border-line bg-surface px-6 py-7 transition-[flex-grow,border-color] duration-300 lg:hover:grow-[1.8] lg:hover:border-cyan"
+              >
+                <p className="text-tagline tracking-[0.1em] text-cyan-ink">{v.number}</p>
+                <div>
+                  <h3 className="text-title text-ink">{v.title}</h3>
+                  <p className="mt-2 text-small text-ink-muted">{v.body}</p>
+                </div>
               </Anim>
             ))}
           </div>
