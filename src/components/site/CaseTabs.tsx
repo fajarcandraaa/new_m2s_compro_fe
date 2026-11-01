@@ -10,7 +10,7 @@ import type { CaseStudySummary } from "@/lib/api/types";
  * Metadata industri/jumlah karyawan/durasi sengaja tidak dirender: belum ada
  * sumber datanya di CMS. Tata letak disusun supaya panel tetap rapat.
  */
-export function CaseTabs({ items }: { items: CaseStudySummary[] }) {
+export function CaseTabs({ items, showAllLink = true }: { items: CaseStudySummary[]; showAllLink?: boolean }) {
   const [active, setActive] = useState(0);
   const cs = items[active] ?? items[0];
   if (!cs) return null;
@@ -37,9 +37,11 @@ export function CaseTabs({ items }: { items: CaseStudySummary[] }) {
             <span className="text-[18px] leading-[26px] font-semibold text-ink">{item.title}</span>
           </button>
         ))}
-        <Link href="/studi-kasus" className="mt-4 inline-flex min-h-12 items-center self-start rounded-md border border-line px-6 text-body font-medium text-ink transition-colors hover:border-cyan">
-          Lihat Semua Studi Kasus
-        </Link>
+        {showAllLink ? (
+          <Link href="/studi-kasus" className="mt-4 inline-flex min-h-12 items-center self-start rounded-md border border-line px-6 text-body font-medium text-ink transition-colors hover:border-cyan">
+            Lihat Semua Studi Kasus
+          </Link>
+        ) : null}
       </div>
 
       <div key={cs.slug} className="anim-fadein flex flex-col gap-7 rounded-lg border border-line bg-surface p-6 lg:p-10">
