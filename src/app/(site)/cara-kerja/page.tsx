@@ -29,25 +29,27 @@ export default function CaraKerjaPage() {
       />
 
       <section aria-labelledby="lawan" className="section-block">
-        <div className="container-narrow grid gap-10 lg:grid-cols-[5fr_7fr] lg:gap-16">
-          <Anim className="lg:sticky lg:top-24 lg:self-start">
-            <div className="flex flex-col gap-4">
-              <p className="text-tagline text-cyan-ink">Yang kami lawan</p>
-              <h2 id="lawan" className="text-heading text-ink">
-                Bukan kompetitor, tapi pola kerja yang keliru
-              </h2>
-              <p className="text-body text-ink-muted">
-                Pola ini hampir selalu berakhir sama: waktu terbuang, biaya membengkak, dan sistem akhirnya ditinggalkan.
-              </p>
-            </div>
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
+            <SectionHead
+              id="lawan"
+              eyebrow="Yang kami lawan"
+              title="Bukan kompetitor, tapi pola kerja yang keliru"
+              intro="Pola ini hampir selalu berakhir sama: waktu terbuang, biaya membengkak, dan sistem akhirnya ditinggalkan."
+            />
           </Anim>
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="mt-12 grid gap-6 md:grid-cols-2">
             {MISCONCEPTIONS.map((t, i) => (
-              <Anim as="li" key={t} index={i} className="flex gap-4 rounded-lg border border-line bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-ink-muted">
-                <span className="text-ink-muted">
-                  <CrossIcon />
+              <Anim
+                as="li"
+                key={t}
+                index={i}
+                className="flex items-start gap-5 rounded-2xl border border-line bg-surface p-7 transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-ink-muted"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-ink-muted">
+                  <CrossIcon className="h-[18px] w-[18px]" />
                 </span>
-                <span className="text-body text-ink">{t}</span>
+                <h3 className="text-[18px] leading-[26px] font-medium text-ink">{t}</h3>
               </Anim>
             ))}
           </ul>
@@ -55,14 +57,21 @@ export default function CaraKerjaPage() {
       </section>
 
       <section aria-labelledby="prinsip" className="section-block">
-        <div className="container-narrow flex flex-col gap-10">
-          <Anim>
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
             <SectionHead id="prinsip" eyebrow="Prinsip" title="Cara kami berpikir" />
           </Anim>
-          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+          <div className="mt-14 grid border-t border-line md:grid-cols-2">
             {PRINCIPLES.map((p, i) => (
-              <Anim as="article" key={p.number} index={i} className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-6 lg:p-8">
-                <p className="text-tagline text-cyan-ink">{p.number}</p>
+              <Anim
+                as="article"
+                key={p.number}
+                index={i % 2}
+                className="principle-card flex flex-col gap-3 border-b border-line py-7 md:px-10 md:py-10 md:odd:pl-0 md:even:border-l md:even:pr-0"
+              >
+                <span aria-hidden="true" className="outline-number transition-colors duration-300">
+                  {p.number}
+                </span>
                 <h3 className="text-title text-ink">{p.title}</h3>
                 <p className="text-body text-ink-muted">{p.body}</p>
               </Anim>
@@ -73,54 +82,51 @@ export default function CaraKerjaPage() {
 
       <section data-theme="dark" aria-labelledby="tahapan" className="section-block relative overflow-hidden bg-ground">
         <DotField />
-        <div className="container-narrow relative flex flex-col gap-10">
-          <Anim>
+        <div className="container-narrow relative">
+          <Anim className="max-w-[680px]">
             <SectionHead id="tahapan" eyebrow="Tahapan" title="Empat tahap dari discovery sampai bertumbuh" />
           </Anim>
-          <div className="relative ml-5 md:ml-11">
+          <div className="relative mt-14 pl-14 md:pl-[72px]">
             <span aria-hidden="true" className="absolute top-2 bottom-2 left-[19px] w-0.5 bg-line">
               <span className="anim-fill-y absolute inset-0 block bg-cyan" />
             </span>
-            <ol className="flex flex-col">
-            {STEPS.map((s, i) => (
-              <Anim
-                as="li"
-                key={s.number}
-                index={i}
-                className="relative grid gap-4 border-t border-line py-8 pl-14 last:border-b md:pl-20 lg:grid-cols-[1fr_260px] lg:gap-8 lg:py-10"
-              >
-                <span aria-hidden="true" className="absolute left-0 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-ground text-tagline text-cyan-ink">
-                  {s.number}
-                </span>
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-title text-ink">{s.title}</h3>
-                  <p className="text-body text-ink-muted">{s.body}</p>
-                  <ul className="mt-2 flex flex-col gap-1.5">
-                    {s.points.map((p) => (
-                      <li key={p} className="flex items-start gap-2 text-small text-ink">
-                        <span aria-hidden="true" className="mt-[9px] h-1.5 w-1.5 shrink-0 bg-cyan" />
-                        {p}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="self-start rounded-md border border-line bg-surface p-4">
-                  <p className="text-tagline text-ink-muted">Output</p>
-                  <p className="mt-1 text-small text-ink">{s.output}</p>
-                </div>
-              </Anim>
-            ))}
+            <ol className="flex flex-col gap-10">
+              {STEPS.map((s, i) => (
+                <Anim
+                  as="li"
+                  key={s.number}
+                  index={i}
+                  className="relative grid gap-8 rounded-2xl border border-line bg-surface p-8 transition-[translate,border-color] duration-300 hover:border-cyan md:grid-cols-[5fr_4fr] md:hover:translate-x-2"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-7 -left-14 flex h-10 w-10 items-center justify-center rounded-full border-2 border-cyan bg-[#080808] text-[14px] font-semibold text-cyan md:-left-[72px]"
+                  >
+                    {s.number}
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-title text-ink">{s.title}</h3>
+                    <p className="text-body text-ink-muted">{s.body}</p>
+                  </div>
+                  <div className="flex flex-col justify-center gap-1 border-l-2 border-cyan pl-5">
+                    <p className="text-tagline tracking-[0.1em] text-cyan-ink uppercase">Output</p>
+                    <p className="text-body text-ink">{s.output}</p>
+                  </div>
+                </Anim>
+              ))}
             </ol>
           </div>
         </div>
       </section>
 
       <section aria-labelledby="dampak" className="section-block">
-        <div className="container-narrow flex flex-col gap-10">
-          <Anim>
+        <div className="container-narrow">
+          <Anim className="max-w-[680px]">
             <SectionHead id="dampak" eyebrow="Kenapa penting" title="Pendekatan ini berdampak langsung pada tiga hal" />
           </Anim>
-          <WhyTabs />
+          <div className="mt-12">
+            <WhyTabs />
+          </div>
         </div>
       </section>
 

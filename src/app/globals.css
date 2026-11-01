@@ -192,6 +192,10 @@
     line-height: 56px;
   }
 }
+/* Angka prinsip terisi saat kartu di-hover (mockup halaman Cara Kerja). */
+.principle-card:hover .outline-number {
+  color: var(--cyan);
+}
 
 /* Article body (sanitized HTML from the API) */
 .prose-m2s {
