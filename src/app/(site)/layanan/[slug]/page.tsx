@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BandCta } from "@/components/site/BandCta";
 import { CaseStudyCard } from "@/components/site/CaseStudyCard";
 import { DiscussPanel } from "@/components/site/DiscussPanel";
 import { Faq } from "@/components/site/Faq";
@@ -41,7 +43,7 @@ export default async function LayananDetailPage({ params }: Props) {
   return (
     <>
       <PageHero eyebrow={`Layanan · ${audienceLabel}`} title={service.title} lead={service.tagline} />
-      <div className="container-site py-16 lg:py-24">
+      <div className="container-narrow section-block">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
           <div className="flex min-w-0 flex-1 flex-col gap-12">
             {service.audienceText ? (
@@ -56,7 +58,7 @@ export default async function LayananDetailPage({ params }: Props) {
             {service.deliverables.length > 0 ? (
               <section aria-labelledby="dikerjakan" className="flex flex-col gap-4">
                 <h2 id="dikerjakan" className="text-heading text-ink">
-                  Yang Kami kerjakan
+                  Yang kami kerjakan
                 </h2>
                 <ul>
                   {service.deliverables.map((d) => (
@@ -87,7 +89,7 @@ export default async function LayananDetailPage({ params }: Props) {
             {service.systems.length > 0 ? (
               <section aria-labelledby="sistem" className="flex flex-col gap-4">
                 <h2 id="sistem" className="text-heading text-ink">
-                  Sistem yang sering Kami bangun
+                  Sistem yang sering kami bangun
                 </h2>
                 <ul className="flex flex-wrap gap-2">
                   {service.systems.map((x) => (
@@ -119,6 +121,19 @@ export default async function LayananDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+      <BandCta
+        id="ajakan-layanan"
+        eyebrow="Layanan lain"
+        title="Butuh layanan atau kombinasi lain?"
+        body="Kami membantu memetakan kebutuhan sebelum menentukan layanan yang paling masuk akal."
+      >
+        <Link
+          href="/layanan"
+          className="inline-flex min-h-12 items-center rounded-md bg-[#080808] px-6 font-medium text-white transition-colors hover:bg-[#181818]"
+        >
+          Lihat semua layanan
+        </Link>
+      </BandCta>
       <JsonLd data={serviceJsonLd(service)} />
       <JsonLd data={breadcrumbJsonLd([{ name: "Layanan", path: "/layanan" }, { name: service.title, path: `/layanan/${service.slug}` }])} />
       <JsonLd data={faqJsonLd(service.faqs)} />

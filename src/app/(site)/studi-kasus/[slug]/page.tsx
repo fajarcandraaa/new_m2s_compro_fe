@@ -68,7 +68,7 @@ export default async function StudiKasusDetailPage({ params }: Props) {
   return (
     <>
       <PageHero eyebrow={`Studi kasus · ${cs.systemName} · ${cs.category}`} title={cs.title} lead={cs.summary} />
-      <div className="container-site py-16 lg:py-24">
+      <div className="container-narrow section-block">
         <Card className="mb-12 flex flex-col gap-6 p-6 md:flex-row md:items-start md:gap-12 lg:mb-14 lg:p-8">
           <dl className="grid grid-cols-2 gap-6 md:flex md:gap-12">
             {cs.metrics.map((m) => (
@@ -109,7 +109,7 @@ export default async function StudiKasusDetailPage({ params }: Props) {
                 <MarkedList items={cs.approach} marker={(i) => String(i + 1).padStart(2, "0")} />
                 {cs.solutions.length > 0 ? (
                   <div className="mt-4 flex flex-col gap-3">
-                    <h3 className="text-title text-ink">Yang Kami bangun</h3>
+                    <h3 className="text-title text-ink">Yang kami bangun</h3>
                     <MarkedList items={cs.solutions} marker={() => "—"} />
                   </div>
                 ) : null}
