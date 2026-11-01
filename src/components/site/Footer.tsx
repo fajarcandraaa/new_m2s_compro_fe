@@ -109,9 +109,11 @@ export function Footer({ site }: { site: Site }) {
             <p>
               © {year} {site.legalName}
             </p>
-            {process.env.NEXT_PUBLIC_GA_ID ? (
-              <p>Situs ini memakai Google Analytics untuk statistik kunjungan.</p>
-            ) : null}
+            <p>
+              <Link href="/kebijakan-privasi" className="hover:text-cyan-ink">
+                Kebijakan Privasi
+              </Link>
+            </p>
           </div>
           <p className="hidden text-tagline lg:block">{site.tagline}</p>
         </div>
