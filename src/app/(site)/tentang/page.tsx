@@ -14,7 +14,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = pageMetadata({
   title: "Tentang Kami",
-  description: "Mengubah ide menjadi sistem yang menyelesaikan masalah bisnis nyata. Mindtoscreen Technology Indonesia, berdiri di Malang sejak Januari 2024.",
+  description: "Mengubah ide menjadi sistem yang menyelesaikan masalah bisnis nyata. Mind2Screen, berdiri di Malang sejak Januari 2024.",
   path: "/tentang",
 });
 

@@ -16,7 +16,7 @@ const link = (name: string, path: string, summary?: string) =>
   `- [${clean(name)}](${SITE_URL}${path})${summary && clean(summary) ? `: ${clean(summary)}` : ""}`;
 
 const PAGES: { name: string; path: string; summary: string }[] = [
-  { name: "Tentang Kami", path: "/tentang", summary: "Profil Mindtoscreen Technology Indonesia, nilai, dan perjalanan perusahaan (Malang, sejak Januari 2024)." },
+  { name: "Tentang Kami", path: "/tentang", summary: "Profil Mind2Screen, nilai, dan cara kami bekerja (Malang, sejak Januari 2024)." },
   { name: "Cara Kerja", path: "/cara-kerja", summary: "Empat tahap kerja: Discovery & Alignment, System Blueprint, Modular Implementation, Stabilization & Growth." },
   { name: "Diskusi Kebutuhan", path: "/diskusi", summary: "Formulir brief singkat untuk menjadwalkan sesi diskusi dengan tim Mind2Screen." },
   { name: "Promo", path: "/promo", summary: "Penawaran terbatas untuk layanan Mind2Screen beserta periodenya." },

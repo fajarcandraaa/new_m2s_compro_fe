@@ -21,10 +21,10 @@ export const STORY_CLOSING =
 export type Value = { number: string; title: string; body: string };
 
 export const VALUES: Value[] = [
-  { number: "01", title: "Ownership", body: "Kami memperlakukan sistem klien seperti milik sendiri." },
-  { number: "02", title: "Kejujuran", body: "Kami bilang “tidak” saat sebuah keputusan akan merugikan Anda." },
+  { number: "01", title: "Ownership", body: "kami memperlakukan sistem klien seperti milik sendiri." },
+  { number: "02", title: "Kejujuran", body: "kami bilang “tidak” saat sebuah keputusan akan merugikan Anda." },
   { number: "03", title: "Kualitas engineering", body: "Kode yang bersih dan terdokumentasi, aman untuk jangka panjang." },
-  { number: "04", title: "Problem solving", body: "Kami mulai dari masalah, bukan dari daftar fitur." },
+  { number: "04", title: "Problem solving", body: "kami mulai dari masalah, bukan dari daftar fitur." },
   { number: "05", title: "Kecepatan yang terukur", body: "Bergerak cepat tanpa melewatkan fase yang penting." },
 ];
 
