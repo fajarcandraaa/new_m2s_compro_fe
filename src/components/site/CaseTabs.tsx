@@ -62,6 +62,11 @@ export function CaseTabs({ items, showAllLink = true }: { items: CaseStudySummar
               <div key={m.label} className="flex flex-col gap-2 border-t-[3px] border-cyan pt-4">
                 <p className="text-[64px] leading-[64px] font-semibold text-ink lg:text-[80px] lg:leading-[80px]">{m.value}</p>
                 <p className="text-body text-ink">{m.label}</p>
+                {m.before ? (
+                  <p className="mt-2 text-small text-ink-muted">
+                    <span>Sebelumnya:</span> {m.before}
+                  </p>
+                ) : null}
               </div>
             ))}
           </div>

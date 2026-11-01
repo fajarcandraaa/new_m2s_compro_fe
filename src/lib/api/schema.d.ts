@@ -1304,6 +1304,8 @@ export interface components {
             /** @description Big number, e.g. `1`, `40%`. */
             value: string;
             label: string;
+            /** @description Baseline (previous condition) shown as "Sebelumnya: …" under the label. Omitted → empty. */
+            before?: string;
         };
         /** @description Case-study card (public list). */
         CaseStudySummary: {
