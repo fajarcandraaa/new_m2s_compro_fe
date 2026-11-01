@@ -2,8 +2,10 @@ import type { MetadataRoute } from "next";
 import { getArticles, getCaseStudies, getServices } from "@/lib/api/public";
 import { SITE_URL } from "@/lib/site";
 
-// Sitemap jarang berubah; BE sudah memicu revalidateTag saat konten disimpan.
-export const revalidate = 3600;
+// Jangan di-prerender saat build: `next build` di Docker berjalan tanpa BE terjangkau,
+// sehingga sitemap akan ter-cache kosong (hanya 8 static URL) sampai ISR expired.
+// Digenerate per request; biaya fetch ditekan cache data Next (300 s) + revalidateTag dari BE.
+export const dynamic = "force-dynamic";
 
 // BE membatasi pageSize maksimum 100 (internal/httpx/query.go:63).
 const PAGE_SIZE = 100;
