@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { DotField } from "@/components/brand/DotField";
 import { Anim } from "@/components/site/Anim";
+import { BeforeAfter } from "@/components/site/BeforeAfter";
 import { FilterButton } from "@/components/ui/Filter";
 import type { CaseStudySummary } from "@/lib/api/types";
 
@@ -53,7 +53,7 @@ export function CaseStudyFilter({ items }: { items: CaseStudySummary[] }) {
                 {cs.systemName} · {cs.category}
               </p>
               <h3 className="text-[28px] leading-[36px] font-semibold text-ink">{cs.title}</h3>
-              <p className="text-body text-ink-muted">{cs.summary || cs.cardBody}</p>
+              <p className="text-body text-ink-muted">{cs.cardBody || cs.summary}</p>
               <Link
                 href={`/studi-kasus/${cs.slug}`}
                 className="mt-auto inline-flex items-center gap-2 pt-2 font-medium text-cyan-ink hover:underline"
@@ -66,22 +66,22 @@ export function CaseStudyFilter({ items }: { items: CaseStudySummary[] }) {
               </Link>
             </div>
 
-            {cs.metrics.length > 0 ? (
-              <div className="relative grid grid-cols-2 gap-4 overflow-hidden bg-[#080808] p-7 [--ink:#ffffff] [--ink-muted:#a3a3a3] lg:gap-6 lg:p-10">
-                <DotField />
-                {cs.metrics.slice(0, 2).map((m) => (
-                  <div key={m.label} className="relative flex flex-col gap-2 border-t-[3px] border-cyan pt-4">
-                    <p className="text-[56px] leading-[56px] font-semibold text-cyan lg:text-[72px] lg:leading-[72px]">{m.value}</p>
-                    <p className="text-small text-ink">{m.label}</p>
-                    {m.before ? (
-                      <p className="text-small text-ink-muted">
-                        <span>Sebelumnya:</span> {m.before}
-                      </p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : null}
+            <div
+              data-theme="dark"
+              className="relative flex flex-col justify-center overflow-hidden bg-[#080808] p-7 lg:p-10"
+              style={{
+                backgroundImage: "radial-gradient(#181818 1.6px, transparent 1.8px)",
+                backgroundSize: "32px 32px",
+              }}
+            >
+              <BeforeAfter
+                vertical
+                before={cs.initialConditions}
+                beforeNote={cs.initialConditionsTitle}
+                after={cs.solutions}
+                afterNote={cs.impactTitle}
+              />
+            </div>
           </Anim>
         ))}
       </div>

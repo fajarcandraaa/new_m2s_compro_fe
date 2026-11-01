@@ -75,6 +75,7 @@ export default async function StudiKasusDetailPage({ params }: Props) {
               <div key={m.label} className="flex flex-col md:w-[180px]">
                 <dt className="text-small text-ink-muted">{m.label}</dt>
                 <dd className="order-first text-display text-ink">{m.value}</dd>
+                {m.before ? <dd className="text-small text-ink-muted">Sebelumnya: {m.before}</dd> : null}
               </div>
             ))}
           </dl>

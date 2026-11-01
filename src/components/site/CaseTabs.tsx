@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { BeforeAfter } from "@/components/site/BeforeAfter";
 import { cn } from "@/lib/cn";
 import type { CaseStudySummary } from "@/lib/api/types";
 
@@ -46,31 +47,22 @@ export function CaseTabs({ items, showAllLink = true }: { items: CaseStudySummar
 
       <div
         key={cs.slug}
-        className="anim-fadein group flex flex-col gap-7 rounded-lg border border-line bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-10"
+        className="anim-fadein group flex flex-col gap-7 rounded-2xl border border-line bg-surface p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-10"
       >
         <div className="flex flex-col gap-3">
           <p className="text-tagline text-cyan-ink">
             {cs.systemName} · {cs.category}
           </p>
-          <h3 className="text-heading text-ink">{cs.title}</h3>
-          <p className="text-body text-ink-muted">{cs.summary || cs.cardBody}</p>
+          <h3 className="text-[28px] leading-[36px] font-semibold text-ink">{cs.title}</h3>
+          <p className="text-body text-ink-muted">{cs.cardBody || cs.summary}</p>
         </div>
 
-        {cs.metrics.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2">
-            {cs.metrics.slice(0, 2).map((m) => (
-              <div key={m.label} className="flex flex-col gap-2 border-t-[3px] border-cyan pt-4">
-                <p className="text-[64px] leading-[64px] font-semibold text-ink lg:text-[80px] lg:leading-[80px]">{m.value}</p>
-                <p className="text-body text-ink">{m.label}</p>
-                {m.before ? (
-                  <p className="mt-2 text-small text-ink-muted">
-                    <span>Sebelumnya:</span> {m.before}
-                  </p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        ) : null}
+        <BeforeAfter
+          before={cs.initialConditions}
+          beforeNote={cs.initialConditionsTitle}
+          after={cs.solutions}
+          afterNote={cs.impactTitle}
+        />
 
         <Link href={`/studi-kasus/${cs.slug}`} className="mt-auto inline-flex items-center gap-1 font-medium text-cyan-ink hover:underline">
           Baca studi kasus <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1.5">→</span>
