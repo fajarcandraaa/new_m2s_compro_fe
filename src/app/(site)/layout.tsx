@@ -6,6 +6,12 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { getSite } from "@/lib/api/public";
 import { siteJsonLd } from "@/lib/seo";
 
+// Semua halaman publik dirender per request. Build Docker bisa berjalan tanpa BE
+// terjangkau, dan snapshot prerender saat itu berisi fallback kosong yang lalu
+// disajikan sebagai ISR basi pada kunjungan pertama. Cache data tetap 300 detik
+// per fetch (lib/api/server.ts) dan bisa dipurge lewat POST /api/revalidate.
+export const dynamic = "force-dynamic";
+
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
   return (
