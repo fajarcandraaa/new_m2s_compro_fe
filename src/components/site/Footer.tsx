@@ -109,9 +109,6 @@ export function Footer({ site }: { site: Site }) {
             <p>
               © {year} {site.legalName}
             </p>
-            {process.env.NEXT_PUBLIC_GA_ID ? (
-              <p>Situs ini memakai Google Analytics untuk statistik kunjungan.</p>
-            ) : null}
           </div>
           <p className="hidden text-tagline lg:block">{site.tagline}</p>
         </div>
