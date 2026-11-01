@@ -9,18 +9,17 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { PackageCard } from "@/components/site/PackageCard";
 import { PageHero } from "@/components/site/PageHero";
 import { Chip } from "@/components/ui/Tag";
-import { getCaseStudies, getService, getServices, getSite } from "@/lib/api/public";
+import { getCaseStudies, getService, getSite } from "@/lib/api/public";
 import { breadcrumbJsonLd, faqJsonLd, pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
+
+// Dirender per request (alasan di src/app/(site)/layout.tsx): prerender saat build
+// bisa berisi fallback kosong bila BE belum terjangkau.
+export const dynamic = "force-dynamic";
 
 export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
-
-export async function generateStaticParams() {
-  const services = await getServices();
-  return services.map((s) => ({ slug: s.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

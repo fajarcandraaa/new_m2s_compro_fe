@@ -9,14 +9,12 @@ import { getCaseStudies, getCaseStudy, getSite } from "@/lib/api/public";
 import { breadcrumbJsonLd, caseStudyJsonLd, pageMetadata } from "@/lib/seo";
 import { siteWhatsappUrl } from "@/lib/site";
 
+// Dirender per request (alasan di src/app/(site)/layout.tsx).
+export const dynamic = "force-dynamic";
+
 export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
-
-export async function generateStaticParams() {
-  const items = await getCaseStudies();
-  return items.map((c) => ({ slug: c.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

@@ -8,19 +8,17 @@ import { PageHero } from "@/components/site/PageHero";
 import { ShareLinks } from "@/components/site/ShareLinks";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Tag";
-import { getArticle, getArticles, getRelatedArticles } from "@/lib/api/public";
+import { getArticle, getRelatedArticles } from "@/lib/api/public";
 import { formatDate } from "@/lib/format";
 import { blogPostingJsonLd, breadcrumbJsonLd, faqJsonLd, pageMetadata } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 
+// Dirender per request (alasan di src/app/(site)/layout.tsx).
+export const dynamic = "force-dynamic";
+
 export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
-
-export async function generateStaticParams() {
-  const list = await getArticles(1, 100);
-  return list.data.map((a) => ({ slug: a.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
