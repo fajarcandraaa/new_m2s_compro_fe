@@ -18,7 +18,12 @@ export function BeforeAfter({
   vertical?: boolean;
 }) {
   return (
-    <div className={cn("relative z-[1]", vertical ? "flex flex-col gap-3" : "grid gap-4 md:grid-cols-[1fr_auto_1fr]")}>
+    <div
+      className={cn(
+        "relative z-[1] flex flex-col gap-3",
+        !vertical && "md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4",
+      )}
+    >
       <div className="flex flex-col gap-3 rounded-xl border border-line p-5">
         <p className="text-tagline text-ink-muted">Sebelum</p>
         <Nodes items={before} />
@@ -27,7 +32,7 @@ export function BeforeAfter({
 
       <span
         aria-hidden="true"
-        className={cn("self-center text-[24px] leading-none text-cyan-ink", vertical && "rotate-90")}
+        className={cn("self-center text-[24px] leading-none text-cyan-ink", vertical ? "rotate-90" : "rotate-90 md:rotate-0")}
       >
         &rarr;
       </span>
