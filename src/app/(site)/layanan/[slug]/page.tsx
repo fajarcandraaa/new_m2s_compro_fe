@@ -76,7 +76,7 @@ export default async function LayananDetailPage({ params }: Props) {
                 <h2 id="paket" className="text-heading text-ink">
                   Paket
                 </h2>
-                <ul className="grid gap-4 md:grid-cols-2">
+                <ul className="grid gap-6 md:grid-cols-2">
                   {service.packages.map((p) => (
                     <li key={p.name}>
                       <PackageCard pkg={p} serviceSlug={service.slug} />
