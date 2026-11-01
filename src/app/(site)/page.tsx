@@ -87,7 +87,7 @@ export default async function HomePage() {
 
       {/* 3. Yang kami bangun: bento 4 kolom */}
       <section aria-labelledby="sistem" className="section-block">
-        <div className="container-narrow flex flex-col gap-10">
+        <div className="container-narrow flex flex-col gap-14">
           <Anim>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-12">
               <SectionHead id="sistem" eyebrow="Yang kami bangun" title="Sistem yang tumbuh bersama bisnis Anda" />
@@ -96,16 +96,16 @@ export default async function HomePage() {
               </p>
             </div>
           </Anim>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {SYSTEMS.map((s, i) => (
               <BentoTile key={s.variant} variant={s.variant} index={i}>
                 <p className="text-tagline text-cyan-ink">{s.eyebrow}</p>
-                <h3 className="text-title text-ink">{s.title}</h3>
+                <h3 className={s.variant === "hris" ? "max-w-[300px] text-[28px] leading-[36px] font-semibold text-ink" : "text-title text-ink"}>{s.title}</h3>
                 <p className="text-body text-ink-muted">{s.body}</p>
                 {s.chips ? (
                   <ul className="mt-1 flex flex-wrap gap-2">
                     {s.chips.map((chip) => (
-                      <li key={chip} className="rounded-full border border-[#333333] px-3 py-1 text-[13px] leading-[22px] text-[#a3a3a3]">
+                      <li key={chip} className="rounded-[4px] border border-[#333333] px-3 py-1 text-[14px] leading-[22px] text-white">
                         {chip}
                       </li>
                     ))}
@@ -114,14 +114,24 @@ export default async function HomePage() {
                 {s.variant === "hris" ? (
                   <>
                     <StarIcon className="anim-drift absolute top-9 right-10 h-14 w-14 text-cyan" />
-                    <div aria-hidden="true" className="mt-auto pt-8">
-                      <span className="block h-[3px] w-16 rounded-sm bg-cyan" />
-                    </div>
+                    <span aria-hidden="true" className="absolute right-[-24px] bottom-[-24px] h-[210px] w-[150px] bg-[linear-gradient(135deg,#30c2db,#43f4fa)] opacity-90 [clip-path:polygon(0_20%,100%_0,100%_80%,0_100%)]" />
+                    <span aria-hidden="true" className="absolute right-[140px] bottom-[-60px] h-[170px] w-[110px] bg-[linear-gradient(135deg,#30c2db,#43f4fa)] opacity-50 [clip-path:polygon(0_20%,100%_0,100%_80%,0_100%)]" />
                   </>
                 ) : null}
                 {s.variant === "dms" ? (
-                  <div aria-hidden="true" className="relative mt-auto h-px w-full bg-[#080808]/25">
-                    <span className="anim-travel absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-[#080808]" />
+                  <div aria-hidden="true" className="mt-auto flex flex-col">
+                    <div className="relative flex items-center justify-between px-1">
+                      <span className="absolute inset-x-3 top-1/2 h-0.5 bg-[#080808]/35" />
+                      <span className="relative z-[1] h-3 w-3 rounded-full bg-[#080808]" />
+                      <span className="relative z-[1] h-3 w-3 rounded-full bg-[#080808]" />
+                      <span className="relative z-[1] h-3 w-3 rounded-full bg-[#080808]" />
+                      <span className="anim-travel absolute top-1/2 left-0 z-[2] h-3 w-3 -translate-y-1/2 rounded-full border-2 border-[#080808] bg-white" />
+                    </div>
+                    <div className="mt-2 flex justify-between text-[13px] leading-[20px] font-medium text-[#080808]">
+                      <span>Ajukan</span>
+                      <span>Setujui</span>
+                      <span>Arsipkan</span>
+                    </div>
                   </div>
                 ) : null}
               </BentoTile>

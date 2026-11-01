@@ -27,7 +27,7 @@ export function BentoTile({
   return (
     <article
       className={cn(
-        "anim-pop relative flex flex-col gap-3 overflow-hidden rounded-lg border border-line p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-8",
+        "anim-pop relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-line p-6 transition-[translate,border-color] duration-300 hover:-translate-y-1.5 hover:border-cyan lg:p-8",
         VARIANTS[variant],
         className,
       )}
