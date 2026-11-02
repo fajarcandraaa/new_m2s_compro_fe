@@ -115,8 +115,8 @@ export default async function KebijakanPrivasiPage() {
             <h2 className="text-heading text-ink">Berapa lama data disimpan</h2>
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Data formulir diskusi.</strong> Disimpan selama diperlukan untuk menindaklanjuti
-              permintaan Anda dan keperluan administrasi kerja sama, dan dihapus setelah tidak lagi diperlukan,
-              termasuk untuk data yang sudah lama tidak diperbarui, atau saat Anda meminta penghapusan.
+              permintaan Anda dan keperluan administrasi kerja sama, lalu dihapus setelah tidak lagi diperlukan atau
+              saat Anda meminta penghapusan.
             </p>
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Data statistik kunjungan.</strong> Mengikuti pengaturan retensi pada properti
