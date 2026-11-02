@@ -62,8 +62,9 @@ export default async function KebijakanPrivasiPage() {
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Statistik kunjungan.</strong> Situs ini memakai Google Analytics 4. Google
               Analytics menyimpan cookie (misalnya <code className="text-ink">_ga</code>) berisi ID pengunjung acak, lalu
-              mencatat halaman yang dibuka, jenis perangkat dan browser secara umum, serta alamat situs perujuk. Google
-              Analytics 4 tidak menyimpan alamat IP Anda. Tujuan: memahami halaman mana yang dipakai dan memperbaiki isi
+              mencatat halaman yang dibuka, jenis perangkat dan browser secara umum, serta alamat situs perujuk. Alamat
+              IP dipakai Google Analytics pada tahap pengumpulan untuk menentukan perkiraan lokasi geografis, lalu
+              dibuang sebelum data dicatat di server Analytics. Tujuan: memahami halaman mana yang dipakai dan memperbaiki isi
               situs. Dasar pemrosesan: kepentingan sah kami untuk mengukur pemakaian situs dengan data yang tidak
               mengidentifikasi Anda secara langsung. Anda berhak mengajukan keberatan atas pemrosesan ini.
             </p>
