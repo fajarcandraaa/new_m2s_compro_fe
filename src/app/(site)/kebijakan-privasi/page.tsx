@@ -72,8 +72,9 @@ export default async function KebijakanPrivasiPage() {
               <strong className="text-ink">Formulir diskusi.</strong> Saat Anda mengirim formulir, kami menyimpan nama,
               email, nomor WhatsApp, nama perusahaan (opsional), layanan yang diminati, perkiraan waktu mulai, dan isi
               pesan. Tujuan: menindaklanjuti permintaan Anda dan menyiapkan penawaran. Dasar pemrosesan: persetujuan
-              yang Anda berikan saat mengirim formulir. Isian formulir tidak dikirim ke Google Analytics; yang kami
-              kirim ke sana hanya peristiwa bahwa formulir telah dikirim, tanpa isi isian.
+              yang Anda berikan saat mengirim formulir. Nama, email, nomor WhatsApp, perusahaan, perkiraan waktu
+              mulai, dan isi pesan tidak dikirim ke Google Analytics; yang dikirim hanya peristiwa bahwa formulir
+              telah dikirim beserta nama formulir dan layanan yang dipilih.
             </p>
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Log teknis.</strong> Server mencatat data teknis standar seperti waktu akses
@@ -86,11 +87,10 @@ export default async function KebijakanPrivasiPage() {
             <h2 className="text-heading text-ink">Pihak ketiga dan transfer data ke luar Indonesia</h2>
             <p className="text-body text-ink-muted">
               Data statistik kunjungan diproses oleh Google LLC sebagai penyedia Google Analytics dan dapat diproses di
-              server di luar Indonesia. Sesuai Pasal 56 UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi, pengiriman
-              data ke luar Indonesia dilakukan dengan memastikan adanya pelindungan yang setara, antara lain melalui
-              perjanjian pemrosesan data dan klausul kontraktual standar yang disediakan Google, serta penilaian atas
-              negara tujuan pemrosesan. Data yang dikirim ke Google Analytics terbatas pada data statistik yang dijelaskan
-              di atas dan tidak memuat isi formulir.
+              server di luar Indonesia. Pengiriman data ke luar Indonesia mengikuti Pasal 56 UU No. 27 Tahun 2022
+              tentang Pelindungan Data Pribadi, dengan mengacu pada ketentuan pemrosesan data yang berlaku untuk
+              layanan Google Analytics. Data yang dikirim ke Google Analytics terbatas pada data statistik yang
+              dijelaskan di atas dan tidak memuat nama, email, nomor WhatsApp, maupun isi pesan formulir.
             </p>
             <p className="text-body text-ink-muted">
               Anda bisa menolak pengukuran ini dengan memblokir cookie di pengaturan browser, memakai mode penyamaran,
@@ -115,9 +115,8 @@ export default async function KebijakanPrivasiPage() {
             <h2 className="text-heading text-ink">Berapa lama data disimpan</h2>
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Data formulir diskusi.</strong> Disimpan selama diperlukan untuk menindaklanjuti
-              permintaan Anda dan keperluan administrasi kerja sama, dan dihapus setelah tidak lagi diperlukan atau saat
-              Anda meminta penghapusan. Penghapusan saat ini dilakukan secara manual oleh pengelola situs; belum ada
-              penghapusan otomatis berdasarkan jangka waktu.
+              permintaan Anda dan keperluan administrasi kerja sama, dan dihapus setelah tidak lagi diperlukan,
+              termasuk untuk data yang sudah lama tidak diperbarui, atau saat Anda meminta penghapusan.
             </p>
             <p className="text-body text-ink-muted">
               <strong className="text-ink">Data statistik kunjungan.</strong> Mengikuti pengaturan retensi pada properti
